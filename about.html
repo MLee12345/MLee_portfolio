@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About | MLee Portfolio</title>
+  <style>
+    :root {
+      --bg: #f6f4ee;
+      --surface: #fff;
+      --ink: #1f211d;
+      --muted: #676d61;
+      --line: #d8d2c4;
+      --blue: #3d6d8f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.6;
+    }
+
+    .page {
+      width: min(960px, calc(100% - 36px));
+      margin: 0 auto;
+      padding: 34px 0 56px;
+    }
+
+    .top-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 850;
+      font-size: 0.9rem;
+      margin-bottom: 36px;
+    }
+
+    h1 {
+      margin: 0 0 18px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.5rem, 7vw, 5.6rem);
+      line-height: 0.96;
+      letter-spacing: 0;
+    }
+
+    .intro {
+      margin: 0 0 34px;
+      color: var(--muted);
+      font-size: 1.12rem;
+      max-width: 760px;
+    }
+
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: clamp(20px, 4vw, 34px);
+      margin: 0 0 18px;
+      box-shadow: 0 18px 44px rgba(44, 42, 34, 0.09);
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 1rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+    }
+
+    p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    p:last-child {
+      margin-bottom: 0;
+    }
+
+    .project-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .project-list article {
+      border-top: 1px solid var(--line);
+      padding-top: 14px;
+    }
+
+    h3 {
+      margin: 0 0 4px;
+      font-size: 1.1rem;
+    }
+
+    .fine-print {
+      padding-top: 22px;
+      color: rgba(103, 109, 97, 0.76);
+      font-size: 0.88rem;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <a class="top-link" href="index.html">← Back to portfolio</a>
+    <h1>About this portfolio</h1>
+    <p class="intro">This portfolio presents five AI-assisted projects as usable product snapshots instead of a plain list. Each entry shows what the project looks like, the problem it addresses, the way the interface solves that problem, a working preview, and a path to the code.</p>
+
+    <section class="section">
+      <h2>How It Was Made</h2>
+      <p>The portfolio and all included projects were built with AI assistance. The goal was not just to generate screens, but to shape each project into something understandable: clear problem statements, realistic app flows, screenshots that show the useful parts first, and preview pages that remain available from inside the portfolio.</p>
+      <p>The preview buttons open bundled versions of the projects in the same browser tab as a large overlay. That keeps the page reliable even if an outside deployment changes, moves, or disappears.</p>
+    </section>
+
+    <section class="section">
+      <h2>Included Projects</h2>
+      <div class="project-list">
+        <article>
+          <h3>FinishFast</h3>
+          <p>A workload and focus planner for students who need to see whether their homework plan actually fits before bedtime. It focuses on time budgets, task order, overruns, and a simple focus session.</p>
+        </article>
+        <article>
+          <h3>DopamineLive</h3>
+          <p>A virtual concert ticketing and merch simulator. It shows discovery, seat selection, checkout, wallet states, and event commerce in one playful flow.</p>
+        </article>
+        <article>
+          <h3>gSifter</h3>
+          <p>A Google Calendar sidebar concept for turning buried email event details into calendar suggestions. The preview is a mock calendar with a working sidebar simulation, fake API behavior, suggestion actions, chat rules, and settings.</p>
+        </article>
+        <article>
+          <h3>Face Recall</h3>
+          <p>A memory game for practicing names and faces. It treats recognition practice like a lightweight game with decks, match modes, profile states, and progress screens.</p>
+        </article>
+        <article>
+          <h3>RouteUs</h3>
+          <p>A carpool coordination tool for groups that need shared schedules, availability, rider details, and driver planning in one place.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section">
+      <h2>Privacy And Terms</h2>
+      <p>The portfolio itself does not include analytics or tracking. The preview pages are local demos bundled with the portfolio and are meant for review, presentation, and exploration.</p>
+      <p>The gSifter download is a ZIP for manual Chrome extension loading. It does not install itself automatically.</p>
+    </section>
+
+    <p class="fine-print">This portfolio and all included projects were built with AI assistance.</p>
+  </main>
+</body>
+</html>

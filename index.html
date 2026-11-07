@@ -47,11 +47,11 @@
     }
 
     header {
-      padding: 38px 0 24px;
+      padding: 34px 0 28px;
       border-bottom: 1px solid var(--line);
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
+      align-items: stretch;
       gap: 24px;
     }
 
@@ -87,6 +87,54 @@
       font-size: 0.8rem;
       font-weight: 850;
       white-space: nowrap;
+    }
+
+    .hero-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background:
+        linear-gradient(90deg, rgba(31, 33, 29, 0.045) 1px, transparent 1px),
+        linear-gradient(0deg, rgba(31, 33, 29, 0.045) 1px, transparent 1px),
+        rgba(255, 255, 255, 0.58);
+      background-size: 22px 22px;
+      padding: 16px;
+      display: grid;
+      align-content: space-between;
+      gap: 24px;
+      min-height: 174px;
+    }
+
+    .hero-panel p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+      font-weight: 650;
+      max-width: 28ch;
+    }
+
+    .hero-stack {
+      display: grid;
+      gap: 7px;
+    }
+
+    .hero-stack span {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-top: 1px solid rgba(31, 33, 29, 0.14);
+      padding-top: 7px;
+      color: rgba(31, 33, 29, 0.74);
+      font-size: 0.78rem;
+      font-weight: 850;
+    }
+
+    .hero-stack span::after {
+      content: "";
+      width: 38px;
+      height: 3px;
+      background: currentColor;
+      opacity: 0.28;
     }
 
     .back-top {
@@ -201,6 +249,12 @@
       font-size: 0.82rem;
       font-weight: 900;
       backdrop-filter: blur(10px);
+      cursor: pointer;
+    }
+
+    button.mini-link,
+    button.button {
+      font: inherit;
     }
 
     .project-grid {
@@ -264,25 +318,6 @@
       margin: 0;
       color: var(--muted);
       max-width: 64ch;
-    }
-
-    .features {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 2px 0 0;
-      padding: 0;
-      list-style: none;
-    }
-
-    .features li {
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      background: #faf8f2;
-      color: var(--muted);
-      padding: 6px 10px;
-      font-size: 0.82rem;
-      font-weight: 700;
     }
 
     .actions {
@@ -469,6 +504,7 @@
       color: rgba(103, 109, 97, 0.72);
       font-size: 0.82rem;
       line-height: 1.7;
+      text-align: center;
     }
 
     .footer-links {
@@ -476,6 +512,7 @@
       flex-wrap: wrap;
       gap: 7px 10px;
       align-items: center;
+      justify-content: center;
       margin: 0 0 8px;
       font-weight: 750;
     }
@@ -497,18 +534,80 @@
     }
 
     .footer-note {
-      margin: 0;
+      margin: 0 auto;
       max-width: 860px;
     }
 
+    .preview-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 40;
+      display: none;
+      place-items: center;
+      padding: 28px;
+      background: rgba(31, 33, 29, 0.48);
+      backdrop-filter: blur(7px);
+    }
+
+    .preview-modal.is-open {
+      display: grid;
+    }
+
+    .modal-window {
+      width: min(1180px, 96vw);
+      height: min(760px, 88vh);
+      border-radius: 8px;
+      overflow: hidden;
+      background: #fff;
+      box-shadow: 0 30px 90px rgba(14, 15, 13, 0.34);
+      display: grid;
+      grid-template-rows: auto 1fr;
+    }
+
+    .modal-bar {
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 0 12px 0 16px;
+      border-bottom: 1px solid var(--line);
+      background: #fbfaf6;
+      color: var(--ink);
+      font-weight: 850;
+    }
+
+    .modal-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: #fff;
+      color: var(--ink);
+      cursor: pointer;
+      font-size: 1.2rem;
+      line-height: 1;
+    }
+
+    .modal-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fff;
+    }
+
+    body.modal-open {
+      overflow: hidden;
+    }
+
     @media (max-width: 900px) {
-      header,
       .project-grid {
         grid-template-columns: 1fr;
       }
 
       header {
         display: grid;
+        grid-template-columns: 1fr;
       }
 
       .project-copy {
@@ -552,6 +651,15 @@
         padding: 14px 14px 0;
         justify-content: flex-end;
       }
+
+      .preview-modal {
+        padding: 12px;
+      }
+
+      .modal-window {
+        width: 100%;
+        height: 88vh;
+      }
     }
   </style>
 </head>
@@ -562,27 +670,34 @@
         <p class="eyebrow">MLee Portfolio</p>
         <h1><span class="headline-line">Projects that solve</span><br><span class="headline-line">real problems.</span></h1>
       </div>
-      <div class="site-corner">5 projects • live previews</div>
+      <aside class="hero-panel" aria-label="Portfolio overview">
+        <div class="site-corner">5 projects • live previews</div>
+        <p>A compact gallery of usable apps, screenshots, and source code.</p>
+        <div class="hero-stack" aria-hidden="true">
+          <span>Plan</span>
+          <span>Play</span>
+          <span>Schedule</span>
+        </div>
+      </aside>
     </header>
 
     <nav class="nav" id="nav" aria-label="Project navigation"></nav>
     <main id="projects"></main>
     <footer class="site-footer" aria-label="Portfolio information">
       <div class="footer-links">
-        <a href="#top">About</a>
-        <span class="footer-separator">|</span>
-        <a href="https://github.com/MLee12345" target="_blank" rel="noreferrer">Official Websites</a>
-        <span class="footer-separator">|</span>
-        <a href="https://github.com/MLee12345" target="_blank" rel="noreferrer">Project Code</a>
-        <span class="footer-separator">|</span>
-        <span>AI Built</span>
-        <span class="footer-separator">|</span>
-        <span>Privacy: no tracking on this portfolio</span>
-        <span class="footer-separator">|</span>
-        <span>Terms: preview demos only</span>
+        <a href="about.html">About</a>
       </div>
-      <p class="footer-note">This portfolio and its preview pages were built with AI assistance. Project buttons point to bundled previews or official GitHub repositories so the page stays usable even if outside demo links change.</p>
+      <p class="footer-note">This portfolio and all included projects were built with AI assistance.</p>
     </footer>
+    <div class="preview-modal" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
+      <div class="modal-window">
+        <div class="modal-bar">
+          <span id="previewTitle">Project preview</span>
+          <button class="modal-close" id="closePreview" type="button" aria-label="Close preview">×</button>
+        </div>
+        <iframe class="modal-frame" id="previewFrame" title="Project preview"></iframe>
+      </div>
+    </div>
     <button class="back-top" id="backTop" type="button" aria-label="Back to top">
       <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
         <path d="m18 15-6-6-6 6"></path>
@@ -592,6 +707,11 @@
   </div>
 
   <script>
+    if ("scrollRestoration" in history) {
+      history.scrollRestoration = "manual";
+    }
+    window.scrollTo(0, 0);
+
     const projects = [
       {
         id: "finish-fast",
@@ -648,11 +768,11 @@
         download: "assets/gSifter-extension.zip",
         downloadNote: "ZIP for manual Chrome extension loading; not an installer.",
         screenshots: [
-          { src: "assets/screenshots/gsifter-calendar-sidebar.png", alt: "gSifter mock calendar with sidebar suggestions" },
-          { src: "assets/screenshots/gsifter-add-event.png", alt: "gSifter adding a detected event to the mock calendar" },
-          { src: "assets/screenshots/gsifter-chat-rules.png", alt: "gSifter chat rules beside mock calendar" },
-          { src: "assets/screenshots/gsifter-fake-api-rule.png", alt: "gSifter fake API chat rule saved" },
-          { src: "assets/screenshots/gsifter-settings.png", alt: "gSifter fake API settings panel" }
+          { src: "assets/screenshots/gsifter-sidebar-suggestions.png", alt: "gSifter sidebar suggestions tab" },
+          { src: "assets/screenshots/gsifter-sidebar-added.png", alt: "gSifter sidebar suggestion after adding to calendar" },
+          { src: "assets/screenshots/gsifter-sidebar-chat.png", alt: "gSifter sidebar chat tab" },
+          { src: "assets/screenshots/gsifter-sidebar-rule.png", alt: "gSifter sidebar rule saved from chat" },
+          { src: "assets/screenshots/gsifter-sidebar-settings.png", alt: "gSifter sidebar settings tab" }
         ],
         problem: "Useful events can get buried in emails and calendar clutter, and manually turning them into clean calendar entries takes attention.",
         solution: "gSifter adds a sidebar to Google Calendar for detected event suggestions, chat-based filtering rules, connected accounts, and privacy settings.",
@@ -742,7 +862,7 @@
       mount.innerHTML = projects.map((project, index) => `
         <article class="project" id="${project.id}" style="--accent:${project.accent}">
           <div class="project-toolbar">
-            <a class="mini-link" href="${project.live}" target="_blank" rel="noreferrer">${project.previewText || "Preview"} ${arrowIcon()}</a>
+            <button class="mini-link" type="button" data-preview="${project.live}" data-preview-title="${project.name}">${project.previewText || "Preview"} ${arrowIcon()}</button>
           </div>
           <div class="project-grid">
             <section class="project-copy">
@@ -765,12 +885,9 @@
                     <p>${project.proud}</p>
                   </div>
                 </div>
-                <ul class="features">
-                  ${project.features.map(feature => `<li>${feature}</li>`).join("")}
-                </ul>
               </div>
               <div class="actions">
-                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<a class="button primary" href="${project.live}" target="_blank" rel="noreferrer">Open project ${arrowIcon()}</a>`}
+                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<button class="button primary" type="button" data-preview="${project.live}" data-preview-title="${project.name}">Open project ${arrowIcon()}</button>`}
                 <a class="button" href="${project.code}" target="_blank" rel="noreferrer" title="View code on GitHub" aria-label="View ${project.name} code on GitHub">See in ${githubIcon()}${arrowIcon()}</a>
               </div>
               ${project.downloadNote ? `<p class="download-note">${project.downloadNote}</p>` : ""}
@@ -784,6 +901,43 @@
     }
 
     render();
+
+    const previewModal = document.getElementById("previewModal");
+    const previewFrame = document.getElementById("previewFrame");
+    const previewTitle = document.getElementById("previewTitle");
+    const closePreview = document.getElementById("closePreview");
+    let lastPreviewTrigger = null;
+
+    function openPreview(url, title, trigger) {
+      lastPreviewTrigger = trigger;
+      previewTitle.textContent = `${title} preview`;
+      previewFrame.src = url;
+      previewModal.classList.add("is-open");
+      document.body.classList.add("modal-open");
+      closePreview.focus();
+    }
+
+    function closePreviewModal() {
+      previewModal.classList.remove("is-open");
+      document.body.classList.remove("modal-open");
+      previewFrame.removeAttribute("src");
+      if (lastPreviewTrigger) {
+        lastPreviewTrigger.focus();
+      }
+    }
+
+    document.querySelectorAll("[data-preview]").forEach((button) => {
+      button.addEventListener("click", () => {
+        openPreview(button.dataset.preview, button.dataset.previewTitle, button);
+      });
+    });
+
+    closePreview.addEventListener("click", closePreviewModal);
+    previewModal.addEventListener("click", (event) => {
+      if (event.target === previewModal) {
+        closePreviewModal();
+      }
+    });
 
     document.querySelectorAll(".screenshot-carousel").forEach((carousel) => {
       const track = carousel.querySelector(".shot-track");
@@ -818,6 +972,26 @@
         }
       });
       updateDots();
+      track.scrollTo({ left: 0, behavior: "auto" });
+      window.addEventListener("pageshow", () => {
+        activeSlide = 0;
+        track.scrollTo({ left: 0, behavior: "auto" });
+        updateDots();
+      });
+    });
+
+    window.addEventListener("pageshow", () => {
+      window.scrollTo(0, 0);
+    });
+
+    window.addEventListener("load", () => {
+      window.scrollTo(0, 0);
+    });
+
+    window.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && previewModal.classList.contains("is-open")) {
+        closePreviewModal();
+      }
     });
 
     const backTop = document.getElementById("backTop");
