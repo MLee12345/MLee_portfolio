@@ -66,12 +66,16 @@
 
     h1 {
       margin: 0;
-      max-width: 640px;
-      font-size: clamp(2.35rem, 5vw, 4.4rem);
-      line-height: 0.94;
+      max-width: 720px;
+      font-size: clamp(2.05rem, 4vw, 3.75rem);
+      line-height: 1.02;
       letter-spacing: 0;
       font-family: Georgia, "Times New Roman", serif;
       font-weight: 700;
+    }
+
+    .headline-line {
+      white-space: nowrap;
     }
 
     .site-corner {
@@ -83,6 +87,40 @@
       font-size: 0.8rem;
       font-weight: 850;
       white-space: nowrap;
+    }
+
+    .back-top {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      width: 48px;
+      height: 48px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.9);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      box-shadow: 0 12px 30px rgba(44, 42, 34, 0.16);
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(10px);
+      transition: opacity 180ms ease, transform 180ms ease;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+    }
+
+    .back-top.is-visible {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+
+    .back-top:hover,
+    .back-top:focus-visible {
+      outline: 3px solid rgba(31, 33, 29, 0.12);
+      outline-offset: 3px;
     }
 
     .nav {
@@ -299,6 +337,56 @@
       box-shadow: 0 14px 34px rgba(35, 32, 26, 0.18);
       display: grid;
       grid-template-rows: 1fr auto;
+      position: relative;
+    }
+
+    .screenshot-carousel::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10px;
+      background: #fff;
+      border-bottom: 1px solid rgba(31, 33, 29, 0.08);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .screenshot-carousel:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent), transparent 62%);
+      outline-offset: 4px;
+    }
+
+    .carousel-arrow {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      border: 1px solid rgba(31, 33, 29, 0.24);
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      z-index: 2;
+      box-shadow: 0 8px 20px rgba(35, 32, 26, 0.16);
+    }
+
+    .carousel-arrow:hover,
+    .carousel-arrow:focus-visible {
+      outline: 3px solid color-mix(in srgb, var(--accent), transparent 72%);
+      outline-offset: 2px;
+    }
+
+    .carousel-arrow.prev {
+      left: 12px;
+    }
+
+    .carousel-arrow.next {
+      right: 12px;
     }
 
     .dot {
@@ -368,9 +456,49 @@
 
     .download-note {
       color: var(--muted);
-      font-size: 0.82rem;
+      font-size: 0.78rem;
       margin: -12px 0 0;
-      max-width: 42ch;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .site-footer {
+      padding: 36px 0 48px;
+      color: rgba(103, 109, 97, 0.72);
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px 10px;
+      align-items: center;
+      margin: 0 0 8px;
+      font-weight: 750;
+    }
+
+    .footer-links a {
+      text-decoration: none;
+      color: rgba(31, 33, 29, 0.68);
+    }
+
+    .footer-links a:hover,
+    .footer-links a:focus-visible {
+      color: var(--ink);
+      outline: none;
+    }
+
+    .footer-separator {
+      color: rgba(31, 33, 29, 0.44);
+      font-weight: 900;
+    }
+
+    .footer-note {
+      margin: 0;
+      max-width: 860px;
     }
 
     @media (max-width: 900px) {
@@ -415,6 +543,10 @@
         height: 201px;
       }
 
+      .headline-line {
+        white-space: normal;
+      }
+
       .project-toolbar {
         position: static;
         padding: 14px 14px 0;
@@ -425,16 +557,37 @@
 </head>
 <body>
   <div class="page">
-    <header>
+    <header id="top">
       <div>
         <p class="eyebrow">MLee Portfolio</p>
-        <h1>Projects that solve real problems.</h1>
+        <h1><span class="headline-line">Projects that solve</span><br><span class="headline-line">real problems.</span></h1>
       </div>
       <div class="site-corner">5 projects • live previews</div>
     </header>
 
     <nav class="nav" id="nav" aria-label="Project navigation"></nav>
     <main id="projects"></main>
+    <footer class="site-footer" aria-label="Portfolio information">
+      <div class="footer-links">
+        <a href="#top">About</a>
+        <span class="footer-separator">|</span>
+        <a href="https://github.com/MLee12345" target="_blank" rel="noreferrer">Official Websites</a>
+        <span class="footer-separator">|</span>
+        <a href="https://github.com/MLee12345" target="_blank" rel="noreferrer">Project Code</a>
+        <span class="footer-separator">|</span>
+        <span>AI Built</span>
+        <span class="footer-separator">|</span>
+        <span>Privacy: no tracking on this portfolio</span>
+        <span class="footer-separator">|</span>
+        <span>Terms: preview demos only</span>
+      </div>
+      <p class="footer-note">This portfolio and its preview pages were built with AI assistance. Project buttons point to bundled previews or official GitHub repositories so the page stays usable even if outside demo links change.</p>
+    </footer>
+    <button class="back-top" id="backTop" type="button" aria-label="Back to top">
+      <svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+        <path d="m18 15-6-6-6 6"></path>
+      </svg>
+    </button>
 
   </div>
 
@@ -447,7 +600,7 @@
         type: "Workload and focus planner",
         accent: "#4f46e5",
         label: "Homework time planner",
-        live: "https://finish-fast.vercel.app/",
+        live: "assets/previews/finish_fast/index.html",
         code: "https://github.com/MLee12345/finish_fast",
         screenshots: [
           { src: "assets/screenshots/finish-fast-budget.png", alt: "FinishFast bedtime budget and homework queue" },
@@ -468,7 +621,7 @@
         type: "Virtual ticketing and merch simulator",
         accent: "#10b981",
         label: "Virtual concert tickets",
-        live: "https://dopamine-live.vercel.app/",
+        live: "assets/previews/dopamine_live/index.html",
         code: "https://github.com/MLee12345/dopamine_live",
         screenshots: [
           { src: "assets/screenshots/dopamine-live-discover.png", alt: "DopamineLive concert discovery marketplace" },
@@ -493,7 +646,7 @@
         previewText: "Preview demo",
         code: "https://github.com/MLee12345/gSifter",
         download: "assets/gSifter-extension.zip",
-        downloadNote: "Download gives you a ZIP for loading the Chrome extension manually; it does not install itself.",
+        downloadNote: "ZIP for manual Chrome extension loading; not an installer.",
         screenshots: [
           { src: "assets/screenshots/gsifter-calendar-sidebar.png", alt: "gSifter mock calendar with sidebar suggestions" },
           { src: "assets/screenshots/gsifter-add-event.png", alt: "gSifter adding a detected event to the mock calendar" },
@@ -513,13 +666,13 @@
         type: "Memory game",
         accent: "#6366f1",
         label: "Name memory game",
-        live: "https://face-recall.vercel.app/",
+        live: "assets/previews/face_recall/index.html",
         code: "https://github.com/MLee12345/face_recall",
         screenshots: [
-          { src: "assets/screenshots/face-recall-welcome.png", alt: "Face Recall welcome screen" },
-          { src: "assets/screenshots/face-recall-decks.png", alt: "Face Recall deck management screen" },
           { src: "assets/screenshots/face-recall-game.png", alt: "Face Recall quiz mode" },
           { src: "assets/screenshots/face-recall-match.png", alt: "Face Recall matching mode" },
+          { src: "assets/screenshots/face-recall-decks.png", alt: "Face Recall deck management screen" },
+          { src: "assets/screenshots/face-recall-welcome.png", alt: "Face Recall welcome screen" },
           { src: "assets/screenshots/face-recall-leaderboard.png", alt: "Face Recall leaderboard screen" }
         ],
         problem: "Face recognition is a useful social skill, but practice tools can feel clinical instead of inviting.",
@@ -534,7 +687,7 @@
         type: "Carpool coordination tool",
         accent: "#0284c7",
         label: "Carpool schedule tool",
-        live: "https://route-us.vercel.app/",
+        live: "assets/previews/route_us/index.html",
         code: "https://github.com/MLee12345/route_us",
         screenshots: [
           { src: "assets/screenshots/route-us-dashboard.png", alt: "RouteUs dashboard with carpool group" },
@@ -560,14 +713,20 @@
 
     function previewMarkup(project) {
       return `
-        <div class="screenshot-carousel" data-carousel="${project.id}" aria-label="${project.name} screenshots">
+        <div class="screenshot-carousel" data-carousel="${project.id}" aria-label="${project.name} screenshots" tabindex="0">
+          <button class="carousel-arrow prev" type="button" aria-label="Previous ${project.name} screenshot">
+            <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+          </button>
           <div class="shot-track">
             ${project.screenshots.map((shot, imageIndex) => `
               <figure class="shot" id="${project.id}-shot-${imageIndex}">
-                <img src="${shot.src}" alt="${shot.alt}" loading="lazy">
+                <img src="${shot.src}" alt="${shot.alt}">
               </figure>
             `).join("")}
           </div>
+          <button class="carousel-arrow next" type="button" aria-label="Next ${project.name} screenshot">
+            <svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
           <div class="shot-dots" aria-label="${project.name} screenshot pages">
             ${project.screenshots.map((_, imageIndex) => `<button class="dot ${imageIndex === 0 ? "is-active" : ""}" type="button" data-slide="${imageIndex}" aria-label="Show screenshot ${imageIndex + 1}"></button>`).join("")}
           </div>
@@ -629,20 +788,49 @@
     document.querySelectorAll(".screenshot-carousel").forEach((carousel) => {
       const track = carousel.querySelector(".shot-track");
       const dots = Array.from(carousel.querySelectorAll(".dot"));
+      const prev = carousel.querySelector(".carousel-arrow.prev");
+      const next = carousel.querySelector(".carousel-arrow.next");
       let activeSlide = 0;
       const updateDots = () => {
         dots.forEach((dot, index) => dot.classList.toggle("is-active", index === activeSlide));
       };
+      const goToSlide = (index) => {
+        activeSlide = (index + dots.length) % dots.length;
+        track.scrollTo({ left: activeSlide * track.clientWidth, behavior: "smooth" });
+        updateDots();
+      };
 
       dots.forEach((dot, index) => {
         dot.addEventListener("click", () => {
-          activeSlide = index;
-          track.scrollTo({ left: index * track.clientWidth, behavior: "smooth" });
-          updateDots();
+          goToSlide(index);
         });
+      });
+      prev.addEventListener("click", () => goToSlide(activeSlide - 1));
+      next.addEventListener("click", () => goToSlide(activeSlide + 1));
+      carousel.addEventListener("keydown", (event) => {
+        if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          goToSlide(activeSlide - 1);
+        }
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          goToSlide(activeSlide + 1);
+        }
       });
       updateDots();
     });
+
+    const backTop = document.getElementById("backTop");
+    const updateBackTop = () => {
+      backTop.classList.toggle("is-visible", window.scrollY > 520);
+    };
+
+    backTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    window.addEventListener("scroll", updateBackTop, { passive: true });
+    updateBackTop();
   </script>
 </body>
 </html>

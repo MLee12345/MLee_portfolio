@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RouteUs - Modern Carpool</title>
+    <style>
+        :root {
+            --primary: #0284c7;
+            --primary-hover: #0369a1;
+            --primary-light: #e0f2fe;
+            --bg-main: #f8fafc;
+            --sidebar-bg: #0f172a;
+            --sidebar-hover: #1e293b;
+            --card-bg: #ffffff;
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --text-light: #f8fafc;
+            --border-light: #e2e8f0;
+            --danger: #ef4444;
+            --danger-bg: #fee2e2;
+            --danger-border: #fca5a5;
+            --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        [data-theme="dark"] {
+            --primary: #38bdf8;
+            --primary-hover: #0284c7;
+            --primary-light: #1e293b;
+            --bg-main: #0b1120;
+            --sidebar-bg: #020617;
+            --sidebar-hover: #1e293b;
+            --card-bg: #1e293b;
+            --text-dark: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-light: #334155;
+            --danger-bg: #450a0a;
+            --danger-border: #7f1d1d;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: var(--font-family); background-color: var(--bg-main); color: var(--text-dark); line-height: 1.5; display: flex; height: 100vh; overflow: hidden; transition: background-color 0.3s, color 0.3s; }
+
+        #app-wrapper { display: flex; width: 100vw; height: 100vh; }
+        
+        /* SIDEBAR */
+        .sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            color: var(--text-light);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 1.25rem 0.75rem;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar.collapsed { width: 56px; padding: 1rem 0.25rem; }
+        .sidebar.collapsed .sidebar-brand span,
+        .sidebar.collapsed .sidebar-menu,
+        .sidebar.collapsed .sidebar-user { display: none !important; }
+        .sidebar.collapsed .sidebar-brand { justify-content: center; padding: 0; }
+        .sidebar.collapsed .toggle-btn { font-size: 2rem; width: 100%; padding: 0.25rem 0; }
+
+        .sidebar-brand { display: flex; align-items: center; justify-content: space-between; font-size: 1.35rem; font-weight: 800; color: #38bdf8; padding: 0 0.5rem 1.5rem 0.5rem; }
+        .toggle-btn { background: transparent; border: none; color: #94a3b8; font-size: 1.6rem; cursor: pointer; padding: 0.25rem 0.5rem; border-radius: 6px; line-height: 1; }
+        .toggle-btn:hover { color: #ffffff; background: var(--sidebar-hover); }
+
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 0.5rem; flex: 1; }
+        .sidebar-menu li a { display: flex; align-items: center; padding: 0.75rem 1rem; color: #94a3b8; text-decoration: none; font-weight: 600; border-radius: 10px; transition: all 0.2s; }
+        .sidebar-menu li a:hover, .sidebar-menu li a.active { background-color: var(--sidebar-hover); color: #ffffff; }
+        .sidebar-menu li a.active { background-color: var(--primary); color: #ffffff; }
+
+        .sidebar-user { display: flex; flex-direction: column; gap: 0.75rem; padding-top: 1rem; border-top: 1px solid #334155; }
+        .sidebar-user-info { display: flex; align-items: center; gap: 0.75rem; }
+
+        .theme-toggle-btn {
+            background: var(--sidebar-hover); color: #f8fafc; border: 1px solid #334155; padding: 0.5rem; border-radius: 8px; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; font-weight: 600; width: 100%;
+        }
+        .theme-toggle-btn:hover { background: #334155; }
+
+        /* MAIN CONTENT */
+        .main-content { flex: 1; overflow-y: auto; padding: 2rem; background-color: var(--bg-main); transition: background-color 0.3s; }
+        .view { display: none; max-width: 1000px; margin: 0 auto; }
+        .view.active { display: block; }
+
+        .card { background: var(--card-bg); border-radius: 16px; padding: 1.75rem; box-shadow: 0 4px 12px rgba(0,0,0,0.03); border: 1px solid var(--border-light); margin-bottom: 1.5rem; }
+        .hero-card h1 { font-size: 2.2rem; font-weight: 800; color: var(--text-dark); margin-bottom: 0.5rem; }
+        .hero-card p.subtitle { font-size: 1.15rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+
+        /* Buttons & Inputs */
+        .btn { display: inline-flex; align-items: center; justify-content: center; padding: 0.75rem 1.5rem; font-size: 0.95rem; font-weight: 700; border-radius: 10px; border: 2px solid transparent; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background-color: var(--primary); color: white; border-color: var(--primary); }
+        .btn-primary:hover { opacity: 0.9; }
+        .btn-outline { background-color: transparent; color: var(--primary); border-color: var(--primary); }
+        .btn-outline:hover { background-color: var(--primary-light); }
+        .btn-danger { background-color: var(--danger); color: white; border-color: var(--danger); }
+        .btn-danger:hover { opacity: 0.9; }
+        .btn-group { display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center; }
+        .btn-sm { padding: 0.4rem 0.85rem; font-size: 0.85rem; border-radius: 8px; }
+
+        .avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 1.1rem; overflow: hidden; flex-shrink: 0; background: var(--primary); }
+        .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+        .input-group { margin-bottom: 1.25rem; }
+        .input-group label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
+        .input-group input, .input-group select { width: 100%; padding: 0.75rem 1rem; border: 1px solid var(--border-light); border-radius: 10px; font-size: 1rem; outline: none; background-color: var(--card-bg); color: var(--text-dark); }
+
+        .checkbox-group { display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem 0; }
+        .checkbox-item { display: flex; align-items: center; gap: 0.5rem; font-size: 0.95rem; cursor: pointer; }
+        .checkbox-item input { width: auto; cursor: pointer; }
+
+        .drag-drop-area { border: 2px dashed var(--primary); border-radius: 12px; padding: 1.5rem; text-align: center; background-color: var(--primary-light); cursor: pointer; }
+
+        /* Group Details Grid */
+        .details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-light); }
+        .details-item { background: var(--bg-main); padding: 0.85rem 1rem; border-radius: 12px; border: 1px solid var(--border-light); }
+        .details-item .label { font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--text-muted); letter-spacing: 0.5px; }
+        .details-item .value { font-size: 1rem; font-weight: 700; color: var(--text-dark); margin-top: 4px; }
+        .details-item .value.empty { color: var(--text-muted); font-weight: 500; font-style: italic; }
+
+        /* Grid Lists & Cards */
+        .group-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; margin-top: 1rem; }
+        .group-card { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 14px; padding: 1.5rem; padding-bottom: 3.5rem; cursor: pointer; transition: all 0.2s; position: relative; }
+        .group-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        
+        .delete-group-btn {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: transparent;
+            color: var(--danger);
+            border: none;
+            cursor: pointer;
+            font-size: 1.25rem;
+            padding: 4px 8px;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .delete-group-btn:hover {
+            background: var(--danger-bg);
+            transform: scale(1.1);
+        }
+
+        /* Upcoming Schedule Cards */
+        .upcoming-list { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 1rem; }
+        .upcoming-item { display: flex; align-items: center; justify-content: space-between; padding: 0.85rem 1.1rem; background: var(--bg-main); border-radius: 10px; border: 1px solid var(--border-light); }
+        .tag-role { padding: 0.25rem 0.6rem; border-radius: 6px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; }
+        .tag-driver { background: #dbeafe; color: #1e40af; }
+        .tag-rider { background: #fef3c7; color: #92400e; }
+
+        /* Calendar Grid */
+        .calendar-grid { display: grid; grid-template-columns: 110px repeat(7, 1fr); gap: 0.5rem; overflow-x: auto; }
+        .cal-head { font-weight: 700; text-align: center; padding: 0.6rem 0.25rem; background: var(--primary-light); border-radius: 8px; font-size: 0.85rem; color: var(--text-dark); }
+        .cal-cell { background: var(--card-bg); border: 1px solid var(--border-light); border-radius: 8px; padding: 0.5rem; min-height: 95px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 0.3rem; }
+        .cal-row-label { display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 700; background: var(--primary-light); text-align: center; }
+        .cal-past { opacity: 0.45; }
+
+        .badge-tag { padding: 0.25rem 0.4rem; border-radius: 6px; font-size: 0.75rem; font-weight: 700; display: block; text-align: center; border: none; }
+        .badge-driver { background: #dbeafe; color: #1e40af; }
+        .badge-rider { background: #fef3c7; color: #92400e; cursor: pointer; }
+        .badge-nodriver { background: #fee2e2; color: #dc2626; font-weight: 800; border: 1px dashed #ef4444; }
+
+        .kids-badge-tag {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 0.4rem 0.85rem;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--border-light);
+        }
+
+        /* Integrated Chat Container */
+        .integrated-chat { display: flex; flex-direction: column; height: 420px; background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-light); overflow: hidden; margin-top: 1rem; }
+        .chat-messages { flex: 1; padding: 1.25rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.85rem; background: var(--bg-main); }
+        .chat-bubble { display: flex; gap: 0.65rem; max-width: 85%; }
+        .chat-bubble.mine { align-self: flex-end; flex-direction: row-reverse; }
+        .chat-text { background: var(--card-bg); padding: 0.65rem 0.9rem; border-radius: 12px; border: 1px solid var(--border-light); font-size: 0.9rem; color: var(--text-dark); }
+        .chat-bubble.mine .chat-text { background: var(--primary); color: white; border: none; }
+
+        /* Modals */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15,23,42,0.6); display: flex; align-items: center; justify-content: center; z-index: 1000; }
+        .modal-body { background: var(--card-bg); border-radius: 16px; padding: 2rem; max-width: 480px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid var(--border-light); max-height: 90vh; overflow-y: auto; }
+
+        .copy-toast { position: fixed; bottom: 20px; right: 20px; background: var(--sidebar-bg); color: #fff; padding: 0.75rem 1.25rem; border-radius: 10px; font-weight: 600; font-size: 0.9rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); opacity: 0; pointer-events: none; transition: opacity 0.3s ease; z-index: 2000; }
+        .copy-toast.show { opacity: 1; }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<div id="app-wrapper">
+
+    <!-- SIDEBAR -->
+    <nav class="sidebar hidden" id="app-sidebar">
+        <div>
+            <div class="sidebar-brand">
+                <span>RouteUs</span>
+                <button class="toggle-btn" onclick="app.toggleSidebar()" title="Toggle Sidebar">☰</button>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" id="nav-dashboard" onclick="app.navigate('dashboard')"><span>Dashboard</span></a></li>
+                <li><a href="#" id="nav-profile" onclick="app.navigate('profile')"><span>My Profile</span></a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-user">
+            <button class="theme-toggle-btn" onclick="app.toggleTheme()">
+                <span id="theme-label">Dark Mode</span>
+            </button>
+            <div class="sidebar-user-info">
+                <div class="avatar" id="sidebar-avatar">RU</div>
+                <div style="flex: 1; overflow: hidden;">
+                    <div id="sidebar-username" style="font-weight: 700; font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">User</div>
+                    <a href="#" style="color: #64748b; font-size: 0.8rem; text-decoration: none;" onclick="app.logout()">Sign Out</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="main-content">
+
+        <!-- AUTH VIEW -->
+        <div id="view-auth" class="view active">
+            <div class="card" style="max-width: 460px; margin: 2rem auto; padding: 2.5rem;">
+                <div style="text-align: center; margin-bottom: 1.5rem;">
+                    <h1 style="color: var(--primary); font-size: 2.4rem; font-weight: 800;">RouteUs</h1>
+                    <p style="color: var(--text-muted);" id="auth-subtitle">Smart, fair, and simplified carpooling.</p>
+                </div>
+
+                <div id="auth-error" style="color: var(--danger); font-weight: 600; margin-bottom: 1rem; text-align: center; font-size: 0.9rem;"></div>
+
+                <div class="input-group">
+                    <label>Account / Username</label>
+                    <input type="text" id="auth-name" placeholder="e.g. AlexMorgan">
+                </div>
+
+                <div class="input-group">
+                    <label>Passcode</label>
+                    <input type="password" id="auth-pass" placeholder="••••••••">
+                </div>
+
+                <div id="auth-reg-fields" class="hidden">
+                    <div class="input-group">
+                        <label>Home Address</label>
+                        <input type="text" id="auth-address" placeholder="123 Maple Street">
+                    </div>
+                    <div class="input-group">
+                        <label>Vehicle Car Seats Available</label>
+                        <input type="number" id="auth-seats" value="4" min="1">
+                    </div>
+
+                    <!-- Dynamic Kids List Input -->
+                    <div class="input-group">
+                        <label>Add Kids</label>
+                        <div id="reg-kids-list" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                            <input type="text" class="reg-kid-input" placeholder="Kid Name (e.g. Leo)">
+                        </div>
+                        <button type="button" class="btn btn-outline btn-sm" style="margin-top: 0.5rem; width: 100%;" onclick="app.addKidRegisterRow()">+ Add Another Kid</button>
+                    </div>
+                </div>
+
+                <div class="btn-group" style="flex-direction: column;" id="auth-actions">
+                    <button class="btn btn-primary" id="btn-signin" onclick="app.handleAuth('signin')">Sign In</button>
+                    <button class="btn btn-outline" id="btn-show-register" onclick="app.switchToRegisterMode()">Create New Account</button>
+                    <button class="btn btn-primary hidden" id="btn-register" onclick="app.handleAuth('register')">Register Account</button>
+                    <button class="btn btn-outline hidden" id="btn-back-signin" onclick="app.switchToSignInMode()">Back to Sign In</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- DASHBOARD VIEW -->
+        <div id="view-dashboard" class="view">
+            <div class="card hero-card">
+                <h1>Welcome to your Dashboard</h1>
+                <p class="subtitle">Join an existing carpool group or start a new one.</p>
+                <div class="btn-group">
+                    <button class="btn btn-primary" onclick="app.showCreateGroupModal()">Create New Group</button>
+                    <button class="btn btn-outline" onclick="app.showJoinGroupModal()">Join via Code</button>
+                </div>
+            </div>
+
+            <!-- JOIN GROUP AREA -->
+            <div id="join-group-area" class="card hidden">
+                <h3>Join Group</h3>
+                <p style="font-size:0.9rem; margin-bottom: 1rem; color: var(--text-muted);">Enter the 6-character code provided by the group creator.</p>
+                <div class="input-group">
+                    <input type="text" id="join-code-input" placeholder="e.g. AB12CD" style="text-transform: uppercase;">
+                </div>
+                
+                <div class="input-group">
+                    <label>Select Kid(s) for this Carpool Group</label>
+                    <div class="checkbox-group" id="join-kids-checkboxes"></div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm" onclick="app.joinGroup()">Join Group</button>
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('join-group-area').classList.add('hidden')">Cancel</button>
+                </div>
+            </div>
+
+            <!-- CREATE GROUP AREA -->
+            <div id="create-group-area" class="card hidden">
+                <h3>Create New Group</h3>
+                <div class="input-group" style="margin-top: 1rem;">
+                    <label>Group Name</label>
+                    <input type="text" id="create-group-name" placeholder="e.g. Laurel School Carpool">
+                </div>
+                <div class="input-group">
+                    <label>Destination</label>
+                    <input type="text" id="create-group-dest" placeholder="e.g. Laurel Elementary School">
+                </div>
+                
+                <!-- DYNAMIC TIME SLOTS SETUP -->
+                <div class="input-group">
+                    <label>Time Slots & Descriptions</label>
+                    <div id="create-timeslots-container" style="display: flex; flex-direction: column; gap: 0.5rem;">
+                        <div class="timeslot-row" style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="text" class="create-slot-time" placeholder="e.g. 7:45 AM" value="7:45 AM" style="flex:1;">
+                            <input type="text" class="create-slot-desc" placeholder="e.g. Morning Arrival" value="Morning Arrival" style="flex:2;">
+                        </div>
+                        <div class="timeslot-row" style="display: flex; gap: 0.5rem; align-items: center;">
+                            <input type="text" class="create-slot-time" placeholder="e.g. 3:15 PM" value="3:15 PM" style="flex:1;">
+                            <input type="text" class="create-slot-desc" placeholder="e.g. Afternoon Pickup" value="Afternoon Pickup" style="flex:2;">
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-outline btn-sm" style="margin-top: 0.5rem; width: 100%;" onclick="app.addCreateTimeSlotRow()">+ Add Time Slot Row</button>
+                </div>
+
+                <div class="input-group">
+                    <label>Pickup / Dropoff Location & Notes</label>
+                    <input type="text" id="create-group-notes" placeholder="e.g. Pickup at Front Loop, Dropoff at Side Lot">
+                </div>
+
+                <div class="input-group">
+                    <label>Select Kid(s) for this Carpool Group</label>
+                    <div class="checkbox-group" id="create-kids-checkboxes"></div>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-primary btn-sm" onclick="app.createGroup()">Create</button>
+                    <button class="btn btn-outline btn-sm" onclick="document.getElementById('create-group-area').classList.add('hidden')">Cancel</button>
+                </div>
+            </div>
+
+            <h2 style="margin-bottom: 1rem; font-size: 1.4rem;">My Groups</h2>
+            <div class="group-grid" id="dashboard-groups-grid"></div>
+
+            <!-- UPCOMING RIDES & DRIVES SECTION -->
+            <div class="card" style="margin-top: 2rem;">
+                <h3>Upcoming Rides & Drives</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Your assigned driving duties and rider pickups for this week across your groups.</p>
+                <div class="upcoming-list" id="dashboard-upcoming-list"></div>
+            </div>
+        </div>
+
+        <!-- GROUP DETAILS VIEW -->
+        <div id="view-group" class="view">
+            <button class="btn btn-outline btn-sm" style="margin-bottom: 1.5rem;" onclick="app.navigate('dashboard')">← Back to Dashboard</button>
+            
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h1 id="group-title" style="font-size: 2.2rem; line-height: 1.1;">Group Name</h1>
+                        <div style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.35rem;">
+                            <p style="color: var(--text-muted); font-weight: 600;">Group Code: <span id="group-code-tag" style="color: var(--primary); font-size: 1.1rem; letter-spacing: 1px;">------</span></p>
+                            <button class="btn btn-outline btn-sm" style="padding: 0.15rem 0.5rem; font-size: 0.75rem;" onclick="app.copyGroupCode()">Copy Code</button>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <!-- KIDS DISPLAY BADGE -->
+                        <div class="kids-badge-tag" id="group-kids-display-tag">
+                            👧 Kids: <span id="group-kids-list-text" style="margin-left: 4px;">None</span>
+                        </div>
+                        <button class="btn btn-outline btn-sm" id="edit-details-btn" onclick="app.toggleEditGroupDetails()">Edit Details</button>
+                        <button class="btn btn-primary btn-sm" id="toggle-avail-btn" onclick="app.toggleAvailabilityEditing()">Edit My Availability</button>
+                    </div>
+                </div>
+
+                <!-- CARPOOL GROUP DETAILS DISPLAY -->
+                <div class="details-grid" id="group-details-display">
+                    <div class="details-item">
+                        <div class="label">Destination</div>
+                        <div class="value empty" id="detail-dest">Not set</div>
+                    </div>
+                    <div class="details-item" style="grid-column: span 2;">
+                        <div class="label">Time Slots</div>
+                        <div class="value empty" id="detail-timeslots">Not set</div>
+                    </div>
+                    <div class="details-item">
+                        <div class="label">Pickup / Dropoff Location & Notes</div>
+                        <div class="value empty" id="detail-notes">Not set</div>
+                    </div>
+                </div>
+
+                <!-- EDIT GROUP DETAILS FORM -->
+                <div id="group-details-edit-form" class="hidden" style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+                    <div class="input-group">
+                        <label>Destination</label>
+                        <input type="text" id="edit-group-dest" placeholder="e.g. Laurel Elementary School">
+                    </div>
+                    
+                    <div class="input-group">
+                        <label>Time Slots & Descriptions</label>
+                        <div id="edit-timeslots-container" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                        <button type="button" class="btn btn-outline btn-sm" style="margin-top: 0.5rem; width: 100%;" onclick="app.addEditTimeSlotRow()">+ Add Time Slot Row</button>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Location & Notes</label>
+                        <input type="text" id="edit-group-notes" placeholder="e.g. Front Flagpole Loop">
+                    </div>
+                    <div class="input-group">
+                        <label>My Kid(s) in this Carpool Group</label>
+                        <div class="checkbox-group" id="edit-group-kids-checkboxes"></div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary btn-sm" onclick="app.saveGroupDetails()">Save Details</button>
+                        <button class="btn btn-outline btn-sm" onclick="app.toggleEditGroupDetails()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CALENDAR -->
+            <div class="card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <button class="btn btn-outline btn-sm" onclick="app.changeWeek(-1)">← Prev Week</button>
+                    <h3 id="group-calendar-week-label">Week Schedule</h3>
+                    <button class="btn btn-outline btn-sm" onclick="app.changeWeek(1)">Next Week →</button>
+                </div>
+
+                <div class="calendar-grid" id="group-calendar-grid"></div>
+            </div>
+
+            <!-- INTEGRATED GROUP CHAT -->
+            <div class="card">
+                <h3>Group Chat</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted);">Discuss carpool plans and coordinate rides with members.</p>
+                <div class="integrated-chat">
+                    <div class="chat-messages" id="group-chat-messages"></div>
+                    <div style="padding: 0.85rem; background: var(--card-bg); border-top: 1px solid var(--border-light); display: flex; gap: 0.75rem;">
+                        <input type="text" id="group-chat-input" placeholder="Type a message to the group..." style="flex:1; padding: 0.75rem; border-radius: 8px; border: 1px solid var(--border-light); background: var(--card-bg); color: var(--text-dark);" onkeydown="if(event.key==='Enter' && !event.shiftKey){ event.preventDefault(); app.sendChatMessage(); }">
+                        <button class="btn btn-primary btn-sm" onclick="app.sendChatMessage()">Send</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOTAL DRIVES COMPLETED -->
+            <div class="card">
+                <h3>Total Drives Completed</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom: 1rem;">Summary of driving turns completed by each group member.</p>
+                <div id="group-members-list" style="display: flex; flex-direction: column; gap: 0.75rem;"></div>
+            </div>
+        </div>
+
+        <!-- PROFILE VIEW -->
+        <div id="view-profile" class="view">
+            <div class="card">
+                <h2>My Profile Settings</h2>
+                
+                <div style="display: flex; gap: 1.5rem; align-items: center; margin: 1.5rem 0; flex-wrap: wrap;">
+                    <div class="avatar" id="profile-preview-avatar" style="width: 80px; height: 80px; font-size: 2rem;">RU</div>
+                    <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+                        <div class="btn-group">
+                            <label style="font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 0.5rem;">
+                                Choose Avatar BG:
+                                <input type="color" id="profile-bg-color-picker" onchange="app.updateAvatarBgColor(this.value)">
+                            </label>
+                            <button class="btn btn-outline btn-sm" onclick="app.randomizeAvatarBg()">Random BG Color</button>
+                        </div>
+                        <button class="btn btn-outline btn-sm hidden" id="btn-remove-photo" style="align-self: flex-start;" onclick="app.removeProfilePhoto()">Remove Photo (Return to Default)</button>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <div class="input-group" style="flex: 2; min-width: 200px;">
+                        <label>Account Name</label>
+                        <input type="text" id="profile-name-input" placeholder="Your Display Name">
+                    </div>
+                    <div class="input-group" style="flex: 1; min-width: 120px;">
+                        <label>Profile Initials</label>
+                        <input type="text" id="profile-initials-input" placeholder="e.g. AM" maxlength="3" style="text-transform: uppercase;">
+                    </div>
+                </div>
+
+                <!-- PROFILE KIDS MANAGEMENT -->
+                <div class="input-group">
+                    <label>My Kids</label>
+                    <div id="profile-kids-list" style="display: flex; flex-direction: column; gap: 0.5rem;"></div>
+                    <button type="button" class="btn btn-outline btn-sm" style="margin-top: 0.5rem;" onclick="app.addKidProfileRow()">+ Add Kid</button>
+                </div>
+
+                <div class="input-group">
+                    <label>Profile Picture (Drag & Drop or Upload)</label>
+                    <div class="drag-drop-area" id="profile-drop-zone" onclick="document.getElementById('profile-file-input').click()">
+                        <p id="drop-zone-text">Drag & Drop photo here, or <strong>Click to Upload</strong></p>
+                        <input type="file" id="profile-file-input" accept="image/*" class="hidden" onchange="app.initCropModal(this.files[0])">
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Home Address</label>
+                    <input type="text" id="profile-address-input">
+                </div>
+
+                <div class="input-group">
+                    <label>Car Seats Available</label>
+                    <input type="number" id="profile-seats-input" min="1" value="4">
+                </div>
+
+                <button class="btn btn-primary" onclick="app.saveProfile()">Save Profile Updates</button>
+            </div>
+
+            <!-- DELETE ACCOUNT SECTION -->
+            <div class="card" style="border-color: var(--danger-border); background: var(--bg-main);">
+                <h3 style="color: var(--danger);">Delete Account</h3>
+                <p style="font-size:0.85rem; color:var(--text-muted); margin: 0.5rem 0 1.25rem 0;">Permanently delete your RouteUs account and remove your membership from all carpool groups.</p>
+                <button class="btn btn-danger btn-sm" onclick="app.deleteAccount()">Delete Account</button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- COPY TOAST NOTIFICATION -->
+<div id="copy-toast" class="copy-toast">Group code copied to clipboard!</div>
+
+<!-- IMAGE CROPPER MODAL -->
+<div id="crop-modal" class="modal-overlay hidden">
+    <div class="modal-body">
+        <h3>Crop Profile Picture</h3>
+        <p style="font-size:0.8rem; color: var(--text-muted); text-align: center; margin-top: 0.25rem;">Click and drag image to reposition</p>
+        <div style="margin: 1rem 0; text-align: center; background: var(--bg-main); padding: 1rem; border-radius: 12px; touch-action: none;">
+            <canvas id="crop-canvas" width="220" height="220" style="border-radius: 50%; border: 2px solid var(--primary); cursor: move;"></canvas>
+        </div>
+        <div class="input-group" style="display: flex; align-items: center; gap: 1rem;">
+            <label style="margin: 0;">Zoom:</label>
+            <input type="range" id="crop-zoom" min="0.5" max="3" step="0.1" value="1" oninput="app.drawCropCanvas()">
+        </div>
+        <div class="btn-group">
+            <button class="btn btn-primary btn-sm" onclick="app.applyCroppedImage()">Apply Crop</button>
+            <button class="btn btn-outline btn-sm" onclick="document.getElementById('crop-modal').classList.add('hidden')">Cancel</button>
+        </div>
+    </div>
+</div>
+
+<!-- RIDERS LIST MODAL -->
+<div id="riders-modal" class="modal-overlay hidden">
+    <div class="modal-body">
+        <h3 id="riders-modal-title">Kids Being Picked Up</h3>
+        <p style="font-size:0.85rem; color: var(--text-muted); margin-bottom: 1rem;">The following kids/families requested rides for this slot:</p>
+        <ul id="riders-modal-list" style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.5rem;"></ul>
+        <button class="btn btn-primary btn-sm" style="width: 100%;" onclick="document.getElementById('riders-modal').classList.add('hidden')">Close</button>
+    </div>
+</div>
+
+<script>
+const app = {
+    state: {
+        currentUser: null,
+        activeGroupCode: null,
+        currentWeekMonday: null,
+        editingAvailability: false,
+        days: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        cropImgObj: null,
+        cropZoom: 1,
+        cropOffsetX: 0,
+        cropOffsetY: 0,
+        isDraggingCrop: false,
+        dragStartX: 0,
+        dragStartY: 0
+    },
+
+    init() {
+        if (!localStorage.getItem('routeus_users')) localStorage.setItem('routeus_users', JSON.stringify({}));
+        if (!localStorage.getItem('routeus_groups')) localStorage.setItem('routeus_groups', JSON.stringify({}));
+
+        const theme = localStorage.getItem('routeus_theme') || 'light';
+        document.documentElement.setAttribute('data-theme', theme);
+        this.updateThemeUI(theme);
+
+        this.state.currentWeekMonday = this.getMonday(new Date());
+        this.setupDragAndDrop();
+        this.setupCropCanvasDrag();
+
+        const activeUser = localStorage.getItem('routeus_active_user');
+        if (activeUser) {
+            this.state.currentUser = activeUser;
+            this.showSidebar();
+            this.navigate('dashboard');
+        } else {
+            this.navigate('auth');
+        }
+    },
+
+    toggleTheme() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const target = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', target);
+        localStorage.setItem('routeus_theme', target);
+        this.updateThemeUI(target);
+    },
+
+    updateThemeUI(theme) {
+        const label = document.getElementById('theme-label');
+        if (label) label.innerText = theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    },
+
+    getMonday(d) {
+        d = new Date(d);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        const mon = new Date(d.setDate(diff));
+        mon.setHours(0,0,0,0);
+        return mon;
+    },
+
+    getWeekKey(dateObj) {
+        const d = new Date(dateObj);
+        return `${d.getFullYear()}-W${Math.ceil((d.getDate() - d.getDay() + 1) / 7)}`;
+    },
+
+    formatDateShort(dateObj) {
+        return dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    },
+
+    toggleSidebar() {
+        document.getElementById('app-sidebar').classList.toggle('collapsed');
+    },
+
+    navigate(viewId) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.sidebar-menu a').forEach(a => a.classList.remove('active'));
+
+        const targetView = document.getElementById(`view-${viewId}`);
+        if (targetView) targetView.classList.add('active');
+
+        const navItem = document.getElementById(`nav-${viewId}`);
+        if (navItem) navItem.classList.add('active');
+
+        if (viewId === 'dashboard') this.renderDashboard();
+        if (viewId === 'group') this.renderGroup();
+        if (viewId === 'profile') this.renderProfile();
+    },
+
+    showSidebar() {
+        document.getElementById('app-sidebar').classList.remove('hidden');
+        this.updateSidebarUser();
+    },
+
+    // --- TIME SLOTS FORM HELPERS ---
+    addCreateTimeSlotRow(timeVal = '', descVal = '') {
+        const container = document.getElementById('create-timeslots-container');
+        const div = document.createElement('div');
+        div.className = 'timeslot-row';
+        div.style.cssText = "display: flex; gap: 0.5rem; align-items: center;";
+        div.innerHTML = `
+            <input type="text" class="create-slot-time" placeholder="e.g. 5:00 PM" value="${timeVal}" style="flex:1;">
+            <input type="text" class="create-slot-desc" placeholder="e.g. After-school Activity" value="${descVal}" style="flex:2;">
+            <button type="button" class="btn btn-outline btn-sm" style="color:var(--danger); border-color:var(--danger); padding:0.4rem 0.6rem;" onclick="this.parentElement.remove()">✕</button>
+        `;
+        container.appendChild(div);
+    },
+
+    renderEditTimeSlots(timeSlots) {
+        const container = document.getElementById('edit-timeslots-container');
+        if (!container) return;
+        container.innerHTML = '';
+        (timeSlots || []).forEach((slot, idx) => {
+            this.addEditTimeSlotRow(slot.time, slot.description, idx >= 2);
+        });
+    },
+
+    addEditTimeSlotRow(timeVal = '', descVal = '', allowDelete = true) {
+        const container = document.getElementById('edit-timeslots-container');
+        if (!container) return;
+        const div = document.createElement('div');
+        div.className = 'edit-timeslot-row';
+        div.style.cssText = "display: flex; gap: 0.5rem; align-items: center;";
+        div.innerHTML = `
+            <input type="text" class="edit-slot-time" placeholder="e.g. 5:00 PM" value="${timeVal}" style="flex:1;">
+            <input type="text" class="edit-slot-desc" placeholder="e.g. After-school Activity" value="${descVal}" style="flex:2;">
+            ${allowDelete ? `<button type="button" class="btn btn-outline btn-sm" style="color:var(--danger); border-color:var(--danger); padding:0.4rem 0.6rem;" onclick="this.parentElement.remove()">✕</button>` : ''}
+        `;
+        container.appendChild(div);
+    },
+
+    // --- KIDS FORM HELPERS ---
+    addKidRegisterRow() {
+        const container = document.getElementById('reg-kids-list');
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'reg-kid-input';
+        input.placeholder = "Kid Name (e.g. Maya)";
+        container.appendChild(input);
+    },
+
+    addKidProfileRow(value = '') {
+        const container = document.getElementById('profile-kids-list');
+        const div = document.createElement('div');
+        div.style.cssText = "display: flex; gap: 0.5rem; align-items: center;";
+        div.innerHTML = `
+            <input type="text" class="profile-kid-input" value="${value}" placeholder="Kid Name">
+            <button type="button" class="btn btn-outline btn-sm" style="color:var(--danger); border-color:var(--danger); padding:0.4rem 0.6rem;" onclick="this.parentElement.remove()">✕</button>
+        `;
+        container.appendChild(div);
+    },
+
+    renderKidsCheckboxes(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        container.innerHTML = '';
+
+        const users = JSON.parse(localStorage.getItem('routeus_users')) || {};
+        const user = users[this.state.currentUser] || {};
+        const kids = user.kids || [];
+
+        if (kids.length === 0) {
+            container.innerHTML = `<p style="font-size: 0.85rem; color: var(--text-muted);">No kids added to profile. (You can add them in Profile Settings)</p>`;
+            return;
+        }
+
+        kids.forEach((kid) => {
+            const label = document.createElement('label');
+            label.className = 'checkbox-item';
+            label.innerHTML = `
+                <input type="checkbox" class="kid-select-chk" value="${kid}" checked>
+                👧 ${kid}
+            `;
+            container.appendChild(label);
+        });
+    },
+
+    getSelectedKidsFromContainer(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return [];
+        const chks = container.querySelectorAll('.kid-select-chk:checked');
+        return Array.from(chks).map(c => c.value);
+    },
+
+    // --- AUTHENTICATION ---
+    switchToRegisterMode() {
+        document.getElementById('auth-reg-fields').classList.remove('hidden');
+        document.getElementById('btn-signin').classList.add('hidden');
+        document.getElementById('btn-show-register').classList.add('hidden');
+        document.getElementById('btn-register').classList.remove('hidden');
+        document.getElementById('btn-back-signin').classList.remove('hidden');
+        document.getElementById('auth-error').innerText = '';
+    },
+
+    switchToSignInMode() {
+        document.getElementById('auth-reg-fields').classList.add('hidden');
+        document.getElementById('btn-signin').classList.remove('hidden');
+        document.getElementById('btn-show-register').classList.remove('hidden');
+        document.getElementById('btn-register').classList.add('hidden');
+        document.getElementById('btn-back-signin').classList.add('hidden');
+        document.getElementById('auth-error').innerText = '';
+    },
+
+    handleAuth(mode) {
+        const name = document.getElementById('auth-name').value.trim();
+        const pass = document.getElementById('auth-pass').value.trim();
+        const err = document.getElementById('auth-error');
+
+        err.innerText = '';
+        if (!name || !pass) { err.innerText = "Please enter username and passcode."; return; }
+
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+
+        if (mode === 'signin') {
+            if (!users[name]) { err.innerText = "User does not exist. Click 'Create New Account' to register."; return; }
+            if (users[name].passcode !== pass) { err.innerText = "Incorrect passcode."; return; }
+            this.loginSuccess(name);
+        } else if (mode === 'register') {
+            if (users[name]) { err.innerText = "Username already exists."; return; }
+
+            const address = document.getElementById('auth-address').value.trim();
+            const seats = parseInt(document.getElementById('auth-seats').value) || 4;
+
+            const kidInputs = document.querySelectorAll('.reg-kid-input');
+            const kids = [];
+            kidInputs.forEach(input => {
+                const val = input.value.trim();
+                if (val) kids.push(val);
+            });
+
+            users[name] = {
+                passcode: pass,
+                displayName: name,
+                initials: this.getInitials(name),
+                address: address || '123 Main St',
+                seats: seats,
+                kids: kids,
+                pic: null,
+                avatarBg: '#0284c7'
+            };
+
+            localStorage.setItem('routeus_users', JSON.stringify(users));
+            this.loginSuccess(name);
+        }
+    },
+
+    loginSuccess(name) {
+        this.state.currentUser = name;
+        localStorage.setItem('routeus_active_user', name);
+        this.showSidebar();
+        this.navigate('dashboard');
+    },
+
+    logout() {
+        localStorage.removeItem('routeus_active_user');
+        window.location.reload();
+    },
+
+    deleteAccount() {
+        if (!confirm("Are you sure you want to permanently delete your account? This action cannot be undone.")) return;
+
+        const currentUser = this.state.currentUser;
+        const users = JSON.parse(localStorage.getItem('routeus_users')) || {};
+        const groups = JSON.parse(localStorage.getItem('routeus_groups')) || {};
+
+        delete users[currentUser];
+        localStorage.setItem('routeus_users', JSON.stringify(users));
+
+        for (let code in groups) {
+            let g = groups[code];
+            if (g.members.includes(currentUser)) {
+                g.members = g.members.filter(m => m !== currentUser);
+                if (g.groupKids) delete g.groupKids[currentUser];
+                if (g.tallies) delete g.tallies[currentUser];
+                if (g.members.length === 0) {
+                    delete groups[code];
+                }
+            }
+        }
+        localStorage.setItem('routeus_groups', JSON.stringify(groups));
+
+        localStorage.removeItem('routeus_active_user');
+        window.location.reload();
+    },
+
+    // --- AVATARS & NAME CONTROLS ---
+    getInitials(name) {
+        if (!name) return 'RU';
+        const parts = name.trim().split(' ');
+        return parts.length > 1 ? (parts[0][0] + parts[1][0]).toUpperCase() : name.substring(0,2).toUpperCase();
+    },
+
+    renderAvatarEl(container, username) {
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+        const u = users[username] || {};
+        
+        container.style.backgroundColor = u.avatarBg || '#0284c7';
+        if (u.pic) {
+            container.innerHTML = `<img src="${u.pic}" alt="${username}">`;
+        } else {
+            container.innerHTML = u.initials || this.getInitials(u.displayName || username);
+        }
+    },
+
+    updateSidebarUser() {
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+        const u = users[this.state.currentUser] || {};
+
+        document.getElementById('sidebar-username').innerText = u.displayName || this.state.currentUser;
+        this.renderAvatarEl(document.getElementById('sidebar-avatar'), this.state.currentUser);
+    },
+
+    // --- DASHBOARD & UPCOMING RIDES/DRIVES ---
+    showCreateGroupModal() {
+        document.getElementById('create-group-area').classList.remove('hidden');
+        document.getElementById('join-group-area').classList.add('hidden');
+        this.renderKidsCheckboxes('create-kids-checkboxes');
+    },
+
+    showJoinGroupModal() {
+        document.getElementById('join-group-area').classList.remove('hidden');
+        document.getElementById('create-group-area').classList.add('hidden');
+        this.renderKidsCheckboxes('join-kids-checkboxes');
+    },
+
+    createGroup() {
+        const name = document.getElementById('create-group-name').value.trim();
+        if (!name) return alert("Group name required");
+
+        const dest = document.getElementById('create-group-dest').value.trim();
+        const notes = document.getElementById('create-group-notes').value.trim();
+        const selectedKids = this.getSelectedKidsFromContainer('create-kids-checkboxes');
+
+        // Extract Dynamic Time Slots
+        const slotRows = document.querySelectorAll('#create-timeslots-container .timeslot-row');
+        const timeSlots = [];
+        slotRows.forEach((row, idx) => {
+            const tVal = row.querySelector('.create-slot-time').value.trim();
+            const dVal = row.querySelector('.create-slot-desc').value.trim();
+            if (tVal || dVal) {
+                timeSlots.push({
+                    id: `slot_${idx + 1}_${Date.now()}`,
+                    time: tVal || 'TBD',
+                    description: dVal || 'Time Slot'
+                });
+            }
+        });
+
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const code = Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        groups[code] = {
+            name: name, code: code,
+            destination: dest, notes: notes,
+            timeSlots: timeSlots.length > 0 ? timeSlots : [
+                { id: 'slot_1', time: '7:45 AM', description: 'Morning Arrival' },
+                { id: 'slot_2', time: '3:15 PM', description: 'Afternoon Pickup' }
+            ],
+            members: [this.state.currentUser],
+            groupKids: { [this.state.currentUser]: selectedKids },
+            tallies: { [this.state.currentUser]: 0 },
+            schedules: {}, assignments: {}, messages: []
+        };
+
+        localStorage.setItem('routeus_groups', JSON.stringify(groups));
+        document.getElementById('create-group-name').value = '';
+        this.renderDashboard();
+    },
+
+    joinGroup() {
+        const code = document.getElementById('join-code-input').value.trim().toUpperCase();
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+
+        if (!groups[code]) return alert("Invalid group code!");
+        if (groups[code].members.includes(this.state.currentUser)) return alert("You are already in this group.");
+
+        const selectedKids = this.getSelectedKidsFromContainer('join-kids-checkboxes');
+
+        groups[code].members.push(this.state.currentUser);
+        if (!groups[code].groupKids) groups[code].groupKids = {};
+        groups[code].groupKids[this.state.currentUser] = selectedKids;
+
+        if (!groups[code].tallies) groups[code].tallies = {};
+        groups[code].tallies[this.state.currentUser] = 0;
+
+        localStorage.setItem('routeus_groups', JSON.stringify(groups));
+        document.getElementById('join-code-input').value = '';
+        this.renderDashboard();
+    },
+
+    removeGroup(code, event) {
+        if (event) event.stopPropagation();
+        if (!confirm("Are you sure you want to remove this group from your dashboard? (You can always rejoin using the group code)")) return;
+
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        if (groups[code]) {
+            groups[code].members = groups[code].members.filter(m => m !== this.state.currentUser);
+            if (groups[code].groupKids) delete groups[code].groupKids[this.state.currentUser];
+            if (groups[code].members.length === 0) {
+                delete groups[code];
+            }
+            localStorage.setItem('routeus_groups', JSON.stringify(groups));
+            this.renderDashboard();
+        }
+    },
+
+    renderDashboard() {
+        document.getElementById('create-group-area').classList.add('hidden');
+        document.getElementById('join-group-area').classList.add('hidden');
+
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const grid = document.getElementById('dashboard-groups-grid');
+        grid.innerHTML = '';
+
+        let count = 0;
+        for (let code in groups) {
+            if (groups[code].members.includes(this.state.currentUser)) {
+                count++;
+                const g = groups[code];
+                const card = document.createElement('div');
+                card.className = 'group-card';
+                card.innerHTML = `
+                    <h3>${g.name}</h3>
+                    <p style="color: var(--text-muted); font-size:0.85rem;">Code: <strong style="color:var(--primary);">${code}</strong></p>
+                    <p style="margin-top:0.5rem; font-size:0.85rem; color:var(--text-dark);"><strong>Dest:</strong> ${g.destination || 'Not set'}</p>
+                    <p style="margin-top:0.25rem; font-size:0.85rem; font-weight:600;">${g.members.length} Member(s)</p>
+                    <button class="delete-group-btn" title="Remove Group" onclick="app.removeGroup('${code}', event)">🗑️</button>
+                `;
+                card.onclick = () => {
+                    this.state.activeGroupCode = code;
+                    this.navigate('group');
+                };
+                grid.appendChild(card);
+            }
+        }
+
+        if (count === 0) grid.innerHTML = `<p style="color: var(--text-muted);">No carpool groups joined yet.</p>`;
+
+        this.renderUpcomingRides();
+    },
+
+    renderUpcomingRides() {
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const upcomingContainer = document.getElementById('dashboard-upcoming-list');
+        upcomingContainer.innerHTML = '';
+
+        const weekKey = this.getWeekKey(this.state.currentWeekMonday);
+        let upcomingItems = [];
+
+        for (let code in groups) {
+            const g = groups[code];
+            if (g.members.includes(this.state.currentUser)) {
+                const assignments = g.assignments?.[weekKey] || {};
+                const slots = g.timeSlots || [
+                    { id: 'slot_1', time: '7:45 AM', description: 'Morning Arrival' },
+                    { id: 'slot_2', time: '3:15 PM', description: 'Afternoon Pickup' }
+                ];
+
+                this.state.days.forEach(day => {
+                    slots.forEach(slot => {
+                        const slotId = `${day}-${slot.id}`;
+                        const data = assignments[slotId];
+                        if (data) {
+                            if (data.drivers.includes(this.state.currentUser)) {
+                                upcomingItems.push({
+                                    group: g.name,
+                                    day: day,
+                                    time: `${slot.time} (${slot.description})`,
+                                    role: 'Driver',
+                                    count: data.riders.length
+                                });
+                            } else if (data.riders.includes(this.state.currentUser)) {
+                                upcomingItems.push({
+                                    group: g.name,
+                                    day: day,
+                                    time: `${slot.time} (${slot.description})`,
+                                    role: 'Rider',
+                                    driver: data.drivers.join(', ') || 'Unassigned'
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+        if (upcomingItems.length === 0) {
+            upcomingContainer.innerHTML = `<p style="color:var(--text-muted); font-size:0.9rem;">No upcoming rides or drives scheduled for this week.</p>`;
+            return;
+        }
+
+        upcomingItems.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'upcoming-item';
+            div.innerHTML = `
+                <div>
+                    <strong style="font-size:0.95rem;">${item.group}</strong> — ${item.day} (${item.time})
+                    <div style="font-size:0.8rem; color:var(--text-muted); margin-top:2px;">
+                        ${item.role === 'Driver' ? `Driving ${item.count} kid(s)` : `Driver: ${item.driver}`}
+                    </div>
+                </div>
+                <span class="tag-role ${item.role === 'Driver' ? 'tag-driver' : 'tag-rider'}">${item.role}</span>
+            `;
+            upcomingContainer.appendChild(div);
+        });
+    },
+
+    // --- GROUP VIEW, DETAILS & INTEGRATED CHAT ---
+    copyGroupCode() {
+        if (!this.state.activeGroupCode) return;
+        navigator.clipboard.writeText(this.state.activeGroupCode).then(() => {
+            const toast = document.getElementById('copy-toast');
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        });
+    },
+
+    changeWeek(offset) {
+        const next = new Date(this.state.currentWeekMonday);
+        next.setDate(next.getDate() + (offset * 7));
+        this.state.currentWeekMonday = next;
+        this.renderGroupCalendar();
+    },
+
+    toggleAvailabilityEditing() {
+        this.state.editingAvailability = !this.state.editingAvailability;
+        document.getElementById('toggle-avail-btn').innerText = this.state.editingAvailability ? 'Done Editing' : 'Edit My Availability';
+        this.renderGroupCalendar();
+    },
+
+    toggleEditGroupDetails() {
+        const form = document.getElementById('group-details-edit-form');
+        const display = document.getElementById('group-details-display');
+        const isHidden = form.classList.contains('hidden');
+
+        if (isHidden) {
+            const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+            const g = groups[this.state.activeGroupCode];
+            document.getElementById('edit-group-dest').value = g.destination || '';
+            document.getElementById('edit-group-notes').value = g.notes || '';
+
+            // Render Time Slots
+            this.renderEditTimeSlots(g.timeSlots || [
+                { id: 'slot_1', time: '7:45 AM', description: 'Morning Arrival' },
+                { id: 'slot_2', time: '3:15 PM', description: 'Afternoon Pickup' }
+            ]);
+
+            // Render kids selection
+            this.renderKidsCheckboxes('edit-group-kids-checkboxes');
+            const myKidsInGroup = g.groupKids?.[this.state.currentUser] || [];
+            const container = document.getElementById('edit-group-kids-checkboxes');
+            container.querySelectorAll('.kid-select-chk').forEach(chk => {
+                chk.checked = myKidsInGroup.includes(chk.value);
+            });
+
+            form.classList.remove('hidden');
+            display.classList.add('hidden');
+        } else {
+            form.classList.add('hidden');
+            display.classList.remove('hidden');
+        }
+    },
+
+    saveGroupDetails() {
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const g = groups[this.state.activeGroupCode];
+
+        g.destination = document.getElementById('edit-group-dest').value.trim();
+        g.notes = document.getElementById('edit-group-notes').value.trim();
+
+        // Save Time Slots
+        const editRows = document.querySelectorAll('#edit-timeslots-container .edit-timeslot-row');
+        const newTimeSlots = [];
+        editRows.forEach((row, idx) => {
+            const tVal = row.querySelector('.edit-slot-time').value.trim();
+            const dVal = row.querySelector('.edit-slot-desc').value.trim();
+            if (tVal || dVal) {
+                newTimeSlots.push({
+                    id: g.timeSlots?.[idx]?.id || `slot_${idx + 1}_${Date.now()}`,
+                    time: tVal || 'TBD',
+                    description: dVal || 'Time Slot'
+                });
+            }
+        });
+        g.timeSlots = newTimeSlots.length > 0 ? newTimeSlots : [
+            { id: 'slot_1', time: '7:45 AM', description: 'Morning Arrival' },
+            { id: 'slot_2', time: '3:15 PM', description: 'Afternoon Pickup' }
+        ];
+
+        if (!g.groupKids) g.groupKids = {};
+        g.groupKids[this.state.currentUser] = this.getSelectedKidsFromContainer('edit-group-kids-checkboxes');
+
+        localStorage.setItem('routeus_groups', JSON.stringify(groups));
+        this.toggleEditGroupDetails();
+        this.renderGroup();
+    },
+
+    setDetailVal(elId, val) {
+        const el = document.getElementById(elId);
+        if (val && val.trim() !== '') {
+            el.innerText = val;
+            el.classList.remove('empty');
+        } else {
+            el.innerText = 'Not set';
+            el.classList.add('empty');
+        }
+    },
+
+    renderGroup() {
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+        const code = this.state.activeGroupCode;
+        if (!code || !groups[code]) return this.navigate('dashboard');
+
+        const group = groups[code];
+        document.getElementById('group-title').innerText = group.name;
+        document.getElementById('group-code-tag').innerText = group.code;
+
+        const myKids = group.groupKids?.[this.state.currentUser] || [];
+        document.getElementById('group-kids-list-text').innerText = myKids.length > 0 ? myKids.join(', ') : 'None';
+
+        this.setDetailVal('detail-dest', group.destination);
+        this.setDetailVal('detail-notes', group.notes);
+
+        const slots = group.timeSlots || [
+            { id: 'slot_1', time: '7:45 AM', description: 'Morning Arrival' },
+            { id: 'slot_2', time: '3:15 PM', description: 'Afternoon Pickup' }
+        ];
+        const slotsText = slots.map(s => `${s.time} (${s.description})`).join(' • ');
+        this.setDetailVal('detail-timeslots', slotsText);
+
+        const list = document.getElementById('group-members-list');
+        list.innerHTML = '';
+        group.members.forEach(m => {
+            const u = users[m] || {};
+            const displayName = u.displayName || m;
+            const memberKids = group.groupKids?.[m] || [];
+            const kidsStr = memberKids.length > 0 ? `Kids: ${memberKids.join(', ')}` : 'No kids assigned';
+
+            const div = document.createElement('div');
+            div.style.cssText = "display:flex; align-items:center; justify-content:space-between; padding:0.75rem; background:var(--bg-main); border-radius:10px; border:1px solid var(--border-light);";
+            
+            const av = document.createElement('div');
+            av.className = 'avatar';
+            this.renderAvatarEl(av, m);
+
+            div.innerHTML = `
+                <div style="display:flex; align-items:center; gap:0.75rem;">
+                    ${av.outerHTML}
+                    <div>
+                        <strong style="font-size:1rem;">${displayName}</strong>
+                        <div style="font-size:0.82rem; color:var(--text-muted); margin-top:2px;">${u.seats || 4} Seats • ${kidsStr}</div>
+                    </div>
+                </div>
+                <div style="text-align:right; min-width: 60px;">
+                    <span style="font-size:1.2rem; font-weight:800; color:var(--primary);">${group.tallies?.[m] || 0}</span>
+                    <span style="display:block; font-size:0.65rem; color:var(--text-muted); text-transform:uppercase; font-weight:700;">Drives</span>
+                </div>
+            `;
+            list.appendChild(div);
+        });
+
+        this.renderGroupCalendar();
+        this.renderIntegratedChat();
+    },
+
+    renderGroupCalendar() {
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const group = groups[this.state.activeGroupCode];
+        const currentMon = this.state.currentWeekMonday;
+        const sunday = new Date(currentMon); sunday.setDate(sunday.getDate() + 6);
+
+        document.getElementById('group-calendar-week-label').innerText = `${this.formatDateShort(currentMon)} – ${this.formatDateShort(sunday)}`;
+
+        const weekKey = this.getWeekKey(currentMon);
+        const mySched = group.schedules?.[weekKey]?.[this.state.currentUser] || {};
+        const assignments = group.assignments?.[weekKey] || {};
+
+        const today = new Date();
+        today.setHours(0,0,0,0);
+
+        const container = document.getElementById('group-calendar-grid');
+        container.innerHTML = `<div class="cal-head">Time Slot</div>`;
+
+        this.state.days.forEach((day, i) => {
+            const d = new Date(currentMon); d.setDate(d.getDate() + i);
+            d.setHours(0,0,0,0);
+            const isPast = d < today;
+            container.innerHTML += `<div class="cal-head ${isPast ? 'cal-past' : ''}">${day}<br><span style="font-weight:normal; font-size:0.75rem;">${d.getDate()}</span></div>`;
+        });
+
+        const slots = group.timeSlots || [
+            { id: 'slot_1', time: '7:45 AM', description: 'Morning Arrival' },
+            { id: 'slot_2', time: '3:15 PM', description: 'Afternoon Pickup' }
+        ];
+
+        slots.forEach(slot => {
+            container.innerHTML += `
+                <div class="cal-cell cal-row-label">
+                    <span style="font-weight: 700; font-size: 0.85rem; color: var(--text-dark);">${slot.time}</span>
+                    <span style="font-size: 0.7rem; color: var(--text-muted); font-weight: 600; line-height: 1.1; margin-top: 2px;">${slot.description}</span>
+                </div>`;
+
+            this.state.days.forEach((day, i) => {
+                const d = new Date(currentMon); d.setDate(d.getDate() + i);
+                d.setHours(0,0,0,0);
+                const isPast = d < today;
+
+                const slotId = `${day}-${slot.id}`;
+                const data = assignments[slotId];
+
+                let content = '';
+
+                if (this.state.editingAvailability) {
+                    const cRide = mySched[slotId]?.needsRide ? 'checked' : '';
+                    const cDrive = mySched[slotId]?.canDrive ? 'checked' : '';
+                    content += `
+                        <label style="font-size:0.75rem;"><input type="checkbox" onchange="app.toggleSched('${weekKey}','${slotId}','needsRide',this.checked)" ${cRide}> Need Ride</label>
+                        <label style="font-size:0.75rem;"><input type="checkbox" onchange="app.toggleSched('${weekKey}','${slotId}','canDrive',this.checked)" ${cDrive}> Can Drive</label>
+                    `;
+                } else {
+                    if (data) {
+                        if (data.drivers.length > 0) {
+                            content += data.drivers.map(dr => `<span class="badge-tag badge-driver">🚗 ${dr}</span>`).join('');
+                        } else if (data.riders.length > 0) {
+                            content += `<span class="badge-tag badge-nodriver">NO DRIVER</span>`;
+                        }
+
+                        if (data.riders.length > 0) {
+                            content += `<button class="badge-tag badge-rider" onclick="app.showRidersModal('${weekKey}','${slotId}')">👧 ${data.riders.length} Kid(s)</button>`;
+                        }
+                    } else {
+                        content += `<span style="color:var(--text-muted); font-size:0.75rem;">Open</span>`;
+                    }
+                }
+
+                container.innerHTML += `<div class="cal-cell ${isPast ? 'cal-past' : ''}">${content}</div>`;
+            });
+        });
+    },
+
+    toggleSched(weekKey, slotId, field, val) {
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const group = groups[this.state.activeGroupCode];
+
+        if (!group.schedules) group.schedules = {};
+        if (!group.schedules[weekKey]) group.schedules[weekKey] = {};
+        if (!group.schedules[weekKey][this.state.currentUser]) group.schedules[weekKey][this.state.currentUser] = {};
+        if (!group.schedules[weekKey][this.state.currentUser][slotId]) group.schedules[weekKey][this.state.currentUser][slotId] = {};
+
+        group.schedules[weekKey][this.state.currentUser][slotId][field] = val;
+        localStorage.setItem('routeus_groups', JSON.stringify(groups));
+
+        this.generateGroupAssignments();
+        this.renderGroup();
+    },
+
+    // --- EVEN DRIVER BALANCING ALGORITHM ---
+    generateGroupAssignments() {
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+        const group = groups[this.state.activeGroupCode];
+        if (!group) return;
+
+        const weekKey = this.getWeekKey(this.state.currentWeekMonday);
+
+        if (!group.assignments) group.assignments = {};
+        group.assignments[weekKey] = {};
+
+        let driveCounts = {};
+        group.members.forEach(m => { driveCounts[m] = 0; });
+
+        const slots = group.timeSlots || [
+            { id: 'slot_1', time: '7:45 AM', description: 'Morning Arrival' },
+            { id: 'slot_2', time: '3:15 PM', description: 'Afternoon Pickup' }
+        ];
+
+        this.state.days.forEach(day => {
+            slots.forEach(slot => {
+                const slotId = `${day}-${slot.id}`;
+                let riders = [];
+                let availableDrivers = [];
+
+                group.members.forEach(m => {
+                    const s = group.schedules?.[weekKey]?.[m]?.[slotId];
+                    if (s?.needsRide) riders.push(m);
+                    if (s?.canDrive) availableDrivers.push(m);
+                });
+
+                if (riders.length === 0) return;
+
+                availableDrivers.sort((a, b) => (driveCounts[a] || 0) - (driveCounts[b] || 0));
+
+                let chosenDrivers = [];
+                let capacity = 0;
+
+                for (let d of availableDrivers) {
+                    if (capacity >= riders.length) break;
+                    chosenDrivers.push(d);
+                    capacity += (users[d]?.seats || 4);
+                    driveCounts[d] = (driveCounts[d] || 0) + 1;
+                }
+
+                group.assignments[weekKey][slotId] = {
+                    drivers: chosenDrivers,
+                    riders: riders
+                };
+            });
+        });
+
+        group.members.forEach(m => {
+            if (!group.tallies) group.tallies = {};
+            group.tallies[m] = driveCounts[m];
+        });
+
+        localStorage.setItem('routeus_groups', JSON.stringify(groups));
+    },
+
+    showRidersModal(weekKey, slotId) {
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const group = groups[this.state.activeGroupCode];
+        const riders = group.assignments?.[weekKey]?.[slotId]?.riders || [];
+
+        document.getElementById('riders-modal-title').innerText = `Riders for ${slotId}`;
+        const list = document.getElementById('riders-modal-list');
+        list.innerHTML = '';
+
+        riders.forEach(r => {
+            const kidsList = group.groupKids?.[r] || [];
+            const kidsStr = kidsList.length > 0 ? kidsList.join(', ') : 'Child';
+            list.innerHTML += `
+                <li style="padding:0.6rem; background:var(--bg-main); border-radius:8px; display:flex; justify-content:space-between; border: 1px solid var(--border-light);">
+                    <strong>👧 ${kidsStr}</strong>
+                    <span style="color:var(--text-muted); font-size:0.8rem;">Parent: ${r}</span>
+                </li>
+            `;
+        });
+
+        document.getElementById('riders-modal').classList.remove('hidden');
+    },
+
+    // --- INTEGRATED CHAT ---
+    renderIntegratedChat() {
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const group = groups[this.state.activeGroupCode];
+        if (!group) return;
+
+        const container = document.getElementById('group-chat-messages');
+        container.innerHTML = '';
+
+        (group.messages || []).forEach(msg => {
+            const isMine = msg.sender === this.state.currentUser;
+            const bubble = document.createElement('div');
+            bubble.className = `chat-bubble ${isMine ? 'mine' : ''}`;
+
+            const av = document.createElement('div');
+            av.className = 'avatar';
+            av.style.width = '28px'; av.style.height = '28px'; av.style.fontSize = '0.75rem';
+            this.renderAvatarEl(av, msg.sender);
+
+            bubble.innerHTML = `
+                ${av.outerHTML}
+                <div>
+                    <div style="font-size:0.7rem; color:var(--text-muted); margin-bottom:2px;">${msg.sender} • ${msg.time}</div>
+                    <div class="chat-text">${msg.text}</div>
+                </div>
+            `;
+            container.appendChild(bubble);
+        });
+
+        container.scrollTop = container.scrollHeight;
+    },
+
+    sendChatMessage() {
+        const input = document.getElementById('group-chat-input');
+        const text = input.value.trim();
+        if (!text) return;
+
+        const groups = JSON.parse(localStorage.getItem('routeus_groups'));
+        const group = groups[this.state.activeGroupCode];
+
+        if (!group.messages) group.messages = [];
+        group.messages.push({
+            sender: this.state.currentUser,
+            text: text,
+            time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        });
+
+        localStorage.setItem('routeus_groups', JSON.stringify(groups));
+        input.value = '';
+        this.renderIntegratedChat();
+    },
+
+    // --- PROFILE, EDIT NAME, INITIALS & COLOR PICKER ---
+    renderProfile() {
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+        const u = users[this.state.currentUser] || {};
+
+        document.getElementById('profile-name-input').value = u.displayName || this.state.currentUser;
+        document.getElementById('profile-initials-input').value = u.initials || this.getInitials(u.displayName || this.state.currentUser);
+        document.getElementById('profile-address-input').value = u.address || '';
+        document.getElementById('profile-seats-input').value = u.seats || 4;
+        document.getElementById('profile-bg-color-picker').value = u.avatarBg || '#0284c7';
+
+        const kidsContainer = document.getElementById('profile-kids-list');
+        kidsContainer.innerHTML = '';
+        (u.kids || []).forEach(k => this.addKidProfileRow(k));
+
+        this.renderAvatarEl(document.getElementById('profile-preview-avatar'), this.state.currentUser);
+
+        const btnRemovePhoto = document.getElementById('btn-remove-photo');
+        if (u.pic) {
+            btnRemovePhoto.classList.remove('hidden');
+        } else {
+            btnRemovePhoto.classList.add('hidden');
+        }
+    },
+
+    updateAvatarBgColor(hex) {
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+        users[this.state.currentUser].avatarBg = hex;
+        localStorage.setItem('routeus_users', JSON.stringify(users));
+        this.renderProfile();
+        this.updateSidebarUser();
+    },
+
+    randomizeAvatarBg() {
+        const colors = ['#0284c7', '#0d9488', '#7c3aed', '#db2777', '#ea580c', '#16a34a', '#2563eb'];
+        const hex = colors[Math.floor(Math.random() * colors.length)];
+        this.updateAvatarBgColor(hex);
+    },
+
+    removeProfilePhoto() {
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+        users[this.state.currentUser].pic = null;
+        localStorage.setItem('routeus_users', JSON.stringify(users));
+
+        document.getElementById('drop-zone-text').innerText = "Drag & Drop photo here, or Click to Upload";
+        this.renderProfile();
+        this.updateSidebarUser();
+    },
+
+    setupDragAndDrop() {
+        const dropZone = document.getElementById('profile-drop-zone');
+        if (!dropZone) return;
+
+        ['dragenter', 'dragover'].forEach(eName => {
+            dropZone.addEventListener(eName, (e) => { e.preventDefault(); dropZone.classList.add('dragover'); });
+        });
+        ['dragleave', 'drop'].forEach(eName => {
+            dropZone.addEventListener(eName, (e) => { e.preventDefault(); dropZone.classList.remove('dragover'); });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            const files = e.dataTransfer.files;
+            if (files.length > 0) this.initCropModal(files[0]);
+        });
+    },
+
+    setupCropCanvasDrag() {
+        const canvas = document.getElementById('crop-canvas');
+        if (!canvas) return;
+
+        const startDrag = (x, y) => {
+            this.state.isDraggingCrop = true;
+            this.state.dragStartX = x - this.state.cropOffsetX;
+            this.state.dragStartY = y - this.state.cropOffsetY;
+        };
+
+        const doDrag = (x, y) => {
+            if (!this.state.isDraggingCrop) return;
+            this.state.cropOffsetX = x - this.state.dragStartX;
+            this.state.cropOffsetY = y - this.state.dragStartY;
+            this.drawCropCanvas();
+        };
+
+        const stopDrag = () => { this.state.isDraggingCrop = false; };
+
+        canvas.addEventListener('mousedown', (e) => startDrag(e.clientX, e.clientY));
+        window.addEventListener('mousemove', (e) => doDrag(e.clientX, e.clientY));
+        window.addEventListener('mouseup', stopDrag);
+
+        canvas.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) startDrag(e.touches[0].clientX, e.touches[0].clientY);
+        });
+        window.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 1) doDrag(e.touches[0].clientX, e.touches[0].clientY);
+        });
+        window.addEventListener('touchend', stopDrag);
+    },
+
+    initCropModal(file) {
+        if (!file || !file.type.startsWith('image/')) return alert("Please select an image file.");
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const img = new Image();
+            img.onload = () => {
+                this.state.cropImgObj = img;
+                this.state.cropZoom = 1;
+                this.state.cropOffsetX = 0;
+                this.state.cropOffsetY = 0;
+                document.getElementById('crop-zoom').value = 1;
+                document.getElementById('crop-modal').classList.remove('hidden');
+                this.drawCropCanvas();
+            };
+            img.src = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    },
+
+    drawCropCanvas() {
+        const canvas = document.getElementById('crop-canvas');
+        const ctx = canvas.getContext('2d');
+        const img = this.state.cropImgObj;
+        if (!img) return;
+
+        const zoom = parseFloat(document.getElementById('crop-zoom').value);
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        const aspect = img.width / img.height;
+        let drawW = canvas.width * zoom;
+        let drawH = (canvas.width / aspect) * zoom;
+
+        let baseX = (canvas.width - drawW) / 2;
+        let baseY = (canvas.height - drawH) / 2;
+
+        ctx.drawImage(img, baseX + this.state.cropOffsetX, baseY + this.state.cropOffsetY, drawW, drawH);
+    },
+
+    applyCroppedImage() {
+        const canvas = document.getElementById('crop-canvas');
+        const dataUrl = canvas.toDataURL('image/jpeg');
+
+        const users = JSON.parse(localStorage.getItem('routeus_users'));
+        users[this.state.currentUser].pic = dataUrl;
+        localStorage.setItem('routeus_users', JSON.stringify(users));
+
+        document.getElementById('crop-modal').classList.add('hidden');
+        document.getElementById('drop-zone-text').innerText = "✅ Image Cropped & Applied!";
+        this.renderProfile();
+        this.updateSidebarUser();
+    },
+
+    saveProfile() {
+        const users = JSON.parse(localStorage.getItem('routeus_users')) || {};
+        const u = users[this.state.currentUser];
+
+        const newName = document.getElementById('profile-name-input').value.trim();
+        const newInitials = document.getElementById('profile-initials-input').value.trim().toUpperCase();
+
+        if (newName && newName.toLowerCase() !== this.state.currentUser.toLowerCase()) {
+            const isTaken = Object.keys(users).some(username => {
+                if (username.toLowerCase() === this.state.currentUser.toLowerCase()) return false;
+                const existingUser = users[username];
+                return username.toLowerCase() === newName.toLowerCase() || 
+                       (existingUser.displayName && existingUser.displayName.toLowerCase() === newName.toLowerCase());
+            });
+
+            if (isTaken) {
+                alert("That name is already taken by another account. Please choose a different name.");
+                return;
+            }
+        }
+
+        if (newName) u.displayName = newName;
+        u.initials = newInitials || this.getInitials(newName || this.state.currentUser);
+        u.address = document.getElementById('profile-address-input').value.trim();
+        u.seats = parseInt(document.getElementById('profile-seats-input').value) || 4;
+
+        const kidInputs = document.querySelectorAll('.profile-kid-input');
+        const kids = [];
+        kidInputs.forEach(input => {
+            const val = input.value.trim();
+            if (val) kids.push(val);
+        });
+        u.kids = kids;
+
+        localStorage.setItem('routeus_users', JSON.stringify(users));
+        this.updateSidebarUser();
+        this.renderProfile();
+        alert("Profile & Account settings saved!");
+    }
+};
+
+document.addEventListener('DOMContentLoaded', () => app.init());
+</script>
+</body>
+</html>

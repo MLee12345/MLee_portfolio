@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Face Memory Game</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --surface: #1e293b;
+      --surface-hover: #334155;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #6366f1;
+      --accent-hover: #4f46e5;
+      --border: #334155;
+      --danger: #ef4444;
+      --success: #22c55e;
+      --radius: 14px;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+
+    [data-theme="light"] {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-hover: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      font-size: 1.15rem;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .brand {
+      font-size: 1.5rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: var(--accent);
+    }
+
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .theme-picker {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      background: none;
+      padding: 0;
+    }
+
+    .theme-picker::-webkit-color-swatch-wrapper { padding: 0; }
+    .theme-picker::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+    .btn-icon {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+    }
+
+    .btn-icon:hover {
+      background-color: var(--surface-hover);
+    }
+
+    /* Overlay & Drawer */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 20;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .drawer-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .drawer {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: 320px;
+      background: var(--surface);
+      z-index: 30;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      padding: 2.5rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.75rem;
+      border-right: 1px solid var(--border);
+    }
+
+    .drawer.active {
+      transform: translateX(0);
+    }
+
+    .drawer-nav {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      height: 100%;
+    }
+
+    .drawer-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      padding: 0.85rem 1.15rem;
+      border-radius: var(--radius);
+      border: none;
+      background: transparent;
+      color: var(--text);
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      text-align: left;
+      width: 100%;
+    }
+
+    .drawer-btn:hover, .drawer-btn.active {
+      background: var(--surface-hover);
+      color: var(--accent);
+    }
+
+    /* Layout Main */
+    main {
+      flex: 1;
+      max-width: 1100px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1rem 1.25rem 2rem 1.25rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .view-layout-wrapper {
+      display: flex;
+      gap: 1rem;
+      align-items: flex-start;
+      width: 100%;
+    }
+
+    .view-main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .view {
+      display: none;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .view.active {
+      display: flex;
+    }
+
+    /* Auth Card Styles */
+    .auth-card {
+      max-width: 440px;
+      width: 100%;
+      margin: 2rem auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2.5rem 2rem;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .auth-tab-btn {
+      flex: 1;
+      padding: 0.85rem;
+      background: transparent;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--text-muted);
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .auth-tab-btn.active {
+      border-bottom-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .auth-form .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-align: left;
+    }
+
+    .auth-form label {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .auth-error {
+      color: var(--danger);
+      font-size: 0.95rem;
+      font-weight: 600;
+      min-height: 1.25rem;
+    }
+
+    /* Welcome Landing Page */
+    .landing-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 3.5rem 2rem;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2rem;
+      box-shadow: var(--shadow);
+      margin-top: 1rem;
+    }
+
+    .landing-card h1 {
+      font-size: 2.5rem;
+      color: var(--accent);
+    }
+
+    .landing-card p {
+      color: var(--text-muted);
+      max-width: 500px;
+      font-size: 1.2rem;
+      line-height: 1.6;
+    }
+
+    .landing-actions {
+      display: flex;
+      gap: 1.25rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .landing-actions .btn {
+      min-width: 220px;
+      padding: 1.1rem 2rem;
+      font-size: 1.2rem;
+    }
+
+    /* Mode Selection Banner */
+    .mode-badge {
+      display: inline-block;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .mode-badge.learning { background: rgba(99, 102, 241, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+    .mode-badge.competitive { background: rgba(99, 102, 241, 0.2); color: var(--accent); border: 1px solid var(--accent); }
+
+    /* Buttons & Inputs */
+    .btn {
+      padding: 0.85rem 1.75rem;
+      border-radius: var(--radius);
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+    }
+
+    .btn:hover {
+      background: var(--accent-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-hover);
+    }
+
+    .btn-danger {
+      background: var(--danger);
+    }
+
+    input[type="text"], input[type="password"] {
+      padding: 0.85rem 1.15rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      font-size: 1.1rem;
+      width: 100%;
+    }
+
+    input[type="text"]:focus, input[type="password"]:focus {
+      border-color: var(--accent);
+    }
+
+    /* Custom File Input */
+    .file-input-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+
+    .file-input-wrapper input[type="file"] {
+      position: absolute;
+      left: 0;
+      top: 0;
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      cursor: pointer;
+    }
+
+    .btn-file-custom {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      width: 100%;
+      padding: 1.25rem 2rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      background: var(--surface-hover);
+      border: 2px dashed var(--accent);
+      border-radius: var(--radius);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .btn-file-custom:hover {
+      background: var(--surface);
+      border-color: var(--accent-hover);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow);
+    }
+
+    /* Title Styling */
+    .editable-title-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex: 1;
+    }
+
+    .editable-title-input {
+      font-size: 1.75rem;
+      font-weight: 700;
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text);
+      padding: 0.25rem 0.5rem;
+      border-radius: var(--radius);
+      width: 100%;
+    }
+
+    .editable-title-input:hover { border-color: var(--border); }
+    .editable-title-input:focus { background: var(--surface); border-color: var(--accent); }
+
+    /* Dropdown Header */
+    .deck-picker-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .deck-picker-select {
+      appearance: none;
+      -webkit-appearance: none;
+      background: var(--surface-hover);
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.65rem 2.5rem 0.65rem 1.15rem;
+      border-radius: var(--radius);
+      font-size: 1.05rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s ease;
+    }
+
+    .deck-picker-select:hover { border-color: var(--accent); background: var(--surface); }
+    .deck-picker-select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+
+    .deck-picker-arrow {
+      position: absolute;
+      right: 0.85rem;
+      pointer-events: none;
+      color: var(--text-muted);
+    }
+
+    /* Deck Grids */
+    .deck-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      box-shadow: var(--shadow);
+    }
+
+    /* Game Shell Layout */
+    .game-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: var(--surface);
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+    }
+
+    .header-controls-container {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .face-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.75rem;
+      box-shadow: var(--shadow);
+      position: relative;
+      min-height: 480px;
+      justify-content: center;
+    }
+
+    /* Target Prompt Display for Name-to-Face Mode */
+    .target-prompt-text {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+    }
+
+    /* Image Choice Grid for Name-to-Face Mode */
+    .img-options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    .img-option-btn {
+      background: var(--surface-hover);
+      border: 3px solid var(--border);
+      border-radius: var(--radius);
+      padding: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .img-option-btn:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .img-option-btn img {
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      object-position: top center;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .img-option-btn.correct {
+      border-color: var(--success);
+      background: rgba(34, 197, 94, 0.15);
+    }
+
+    .img-option-btn.wrong {
+      border-color: var(--danger);
+      background: rgba(239, 68, 68, 0.15);
+    }
+
+    /* Game Start & Completion Overlays */
+    .game-overlay-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 1.5rem;
+      width: 100%;
+      height: 100%;
+      padding: 2rem;
+    }
+
+    .game-overlay-card h2 {
+      font-size: 2rem;
+      color: var(--accent);
+    }
+
+    .game-overlay-card p {
+      color: var(--text-muted);
+      font-size: 1.2rem;
+    }
+
+    .face-img {
+      width: 270px;
+      height: 270px;
+      object-fit: cover;
+      object-position: top center;
+      border-radius: 50%;
+      border: 4px solid var(--border);
+    }
+
+    .options-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      width: 100%;
+    }
+
+    @media (max-width: 550px) {
+      .options-grid, .img-options-grid { grid-template-columns: 1fr; }
+    }
+
+    .mc-btn {
+      padding: 1.15rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface-hover);
+      color: var(--text);
+      font-size: 1.15rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .mc-btn.correct { background: var(--success); color: white; border-color: var(--success); }
+    .mc-btn.wrong { background: var(--danger); color: white; border-color: var(--danger); }
+
+    /* Type-In Mode Box */
+    .type-container-box {
+      display: none;
+      width: 100%;
+      max-width: 480px;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .type-mode-header {
+      position: absolute;
+      top: 1.25rem;
+      right: 1.25rem;
+    }
+
+    .type-mode-toggle {
+      display: flex;
+      background: var(--surface-hover);
+      padding: 0.25rem;
+      border-radius: var(--radius);
+      gap: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    .type-mode-btn {
+      padding: 0.4rem 0.85rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: calc(var(--radius) - 4px);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .type-mode-btn.active {
+      background: var(--accent);
+      color: white;
+    }
+
+    /* Timer / Competitive Header */
+    .competitive-timer {
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    /* Matching Game Styles */
+    .match-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .match-column {
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+    }
+
+    .match-card {
+      background: var(--surface-hover);
+      border: 2px solid var(--border);
+      border-radius: var(--radius);
+      height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 600;
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    .match-card.draggable { cursor: grab; padding: 0.25rem; }
+    .match-card.draggable:active { cursor: grabbing; }
+    .match-card.dragging { opacity: 0.4; }
+    .match-card.dropzone { position: relative; transition: border-color 0.2s, background-color 0.2s; }
+    .match-card.dropzone.drag-over { border-color: var(--accent); background: var(--surface); }
+    .match-card.matched { opacity: 0.4; pointer-events: none; border-color: var(--success); background: rgba(34, 197, 94, 0.1); }
+    .match-card.wrong-drop { animation: shake 0.4s ease-in-out; border-color: var(--danger); }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+
+    .match-img {
+      width: 62px;
+      height: 62px;
+      object-fit: cover;
+      object-position: top center;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 1rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+    }
+
+    /* Distinct Toggle Groups */
+    .toggle-group {
+      display: flex;
+      background: var(--bg);
+      padding: 0.25rem;
+      border-radius: var(--radius);
+      gap: 0.25rem;
+      border: 1px solid var(--border);
+    }
+
+    .toggle-btn {
+      padding: 0.45rem 0.85rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      border-radius: calc(var(--radius) - 4px);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .toggle-btn.active { 
+      background: var(--accent); 
+      color: #ffffff; 
+      font-weight: 700; 
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+
+    /* Leaderboard Tables */
+    .leaderboard-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .leaderboard-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.75rem;
+    }
+
+    .user-stats-badge {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: var(--bg);
+      padding: 0.4rem 0.85rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      font-size: 0.95rem;
+    }
+
+    .user-stats-badge span {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .leaderboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .leaderboard-table th, .leaderboard-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .leaderboard-table th { color: var(--text-muted); font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div style="display: flex; align-items: center; gap: 1rem;">
+      <button class="btn-icon" id="openDrawer" aria-label="Open Menu">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+
+      <div class="brand" onclick="switchView('welcome')" style="cursor: pointer;">
+        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+        <span>FaceRecall</span>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input type="color" id="accentPicker" class="theme-picker" value="#6366f1" title="Change accent color">
+      <button class="btn-icon" id="themeToggle" aria-label="Toggle Theme">
+        <svg class="sun-icon" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="drawer-overlay" id="drawerOverlay"></div>
+  
+  <aside class="drawer" id="drawer">
+    <h2 style="font-size: 1.6rem;">Menu</h2>
+    <nav class="drawer-nav">
+      <button class="drawer-btn" onclick="switchView('welcome')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+        Home
+      </button>
+      <button class="drawer-btn" onclick="startAppMode('learning')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path><path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0112 20.055a11.952 11.952 0 01-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z"></path></svg>
+        Learning Practice
+      </button>
+      <button class="drawer-btn" onclick="startAppMode('competitive')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+        Competitive Mode
+      </button>
+      <button class="drawer-btn" onclick="switchView('leaderboard')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+        Leaderboards
+      </button>
+      <button class="drawer-btn" onclick="switchView('decks')">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+        Manage Decks
+      </button>
+      <button class="drawer-btn" id="drawerLogoutBtn" onclick="logoutUser()" style="display: none; color: var(--danger); margin-top: auto;">
+        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+        Log Out
+      </button>
+    </nav>
+  </aside>
+
+  <main>
+    <div class="view-layout-wrapper">
+      <button class="btn-icon" id="globalBackBtn" onclick="goHome()" title="Back to Home" style="display: none; flex-shrink: 0;">
+        <svg width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M15 19l-7-7 7-7"></path></svg>
+      </button>
+
+      <div class="view-main-content">
+
+        <!-- Authentication Page (No 3-bars menu on this view) -->
+        <section id="view-auth" class="view active">
+          <div class="auth-card">
+            <div class="auth-tabs">
+              <button class="auth-tab-btn active" id="tabLogin" onclick="switchAuthTab('login')">Log In</button>
+              <button class="auth-tab-btn" id="tabSignup" onclick="switchAuthTab('signup')">Create Account</button>
+            </div>
+
+            <!-- Login Form -->
+            <form id="loginForm" class="auth-form" onsubmit="handleLogin(event)">
+              <div class="form-group">
+                <label for="loginUsername">Username</label>
+                <input type="text" id="loginUsername" required placeholder="Enter your username">
+              </div>
+              <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" required placeholder="Enter your password">
+              </div>
+              <div id="loginError" class="auth-error"></div>
+              <button type="submit" class="btn" style="width: 100%;">Log In</button>
+            </form>
+
+            <!-- Signup Form -->
+            <form id="signupForm" class="auth-form" onsubmit="handleSignup(event)" style="display: none;">
+              <div class="form-group">
+                <label for="signupName">Display Name</label>
+                <input type="text" id="signupName" required placeholder="e.g. Alex Morgan">
+              </div>
+              <div class="form-group">
+                <label for="signupUsername">Username</label>
+                <input type="text" id="signupUsername" required placeholder="Choose a unique username">
+              </div>
+              <div class="form-group">
+                <label for="signupPassword">Password</label>
+                <input type="password" id="signupPassword" required placeholder="Create a password">
+              </div>
+              <div id="signupError" class="auth-error"></div>
+              <button type="submit" class="btn" style="width: 100%;">Create Account</button>
+            </form>
+          </div>
+        </section>
+
+        <!-- Welcome View -->
+        <section id="view-welcome" class="view">
+          <div class="landing-card">
+            <h1>Welcome to FaceRecall</h1>
+            <p>Master names and faces using active recall and smart matching games.</p>
+            
+            <div style="width: 100%; max-width: 320px; display: flex; flex-direction: column; gap: 0.5rem; text-align: left;">
+              <label style="font-size: 0.95rem; color: var(--text-muted); font-weight: 600;">Player Name</label>
+              <input type="text" id="playerNameInput" placeholder="Enter your player name..." value="Player 1">
+            </div>
+
+            <div class="landing-actions">
+              <button class="btn" onclick="startAppMode('learning')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 14l9-5-9-5-9 5 9 5z"></path></svg>
+                Learning Mode
+              </button>
+              <button class="btn" onclick="startAppMode('competitive')">
+                <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                Competitive Mode
+              </button>
+            </div>
+            
+            <div style="display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;">
+              <button class="btn btn-secondary" onclick="switchView('decks')">Manage Decks</button>
+              <button class="btn btn-secondary" onclick="switchView('leaderboard')">View Leaderboard</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Game View -->
+        <section id="view-game" class="view">
+          <div class="game-header">
+            <div style="display: flex; align-items: center; gap: 0.75rem;">
+              <div class="deck-picker-wrapper">
+                <select id="deckSelect" class="deck-picker-select" onchange="loadSelectedDeck()"></select>
+                <svg class="deck-picker-arrow" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"></path></svg>
+              </div>
+              <span id="appModeBadge" class="mode-badge learning">Learning</span>
+            </div>
+
+            <div id="competitiveTimerDisplay" class="competitive-timer" style="display: none;">
+              ⏱️ <span id="timerSeconds">0.0</span>s
+            </div>
+
+            <div class="header-controls-container">
+              <div class="toggle-group" id="directionToggleGroup">
+                <button class="toggle-btn active" id="dirFaceToName" onclick="setDirection('faceToName')">Face to Name</button>
+                <button class="toggle-btn" id="dirNameToFace" onclick="setDirection('nameToFace')">Name to Face</button>
+              </div>
+
+              <div class="toggle-group">
+                <button class="toggle-btn active" id="modeMC" onclick="setGameMode('mc')">Multiple Choice</button>
+                <button class="toggle-btn" id="modeType" onclick="setGameMode('type')">Type In</button>
+                <button class="toggle-btn" id="modeMatch" onclick="setGameMode('match')">Matching</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="gameContainer" class="face-card" style="display: none;">
+            
+            <div id="startOverlay" class="game-overlay-card">
+              <h2 id="startTitleText">Ready to Play?</h2>
+              <p id="startDescText">Press start to begin learning!</p>
+              <button class="btn" style="padding: 1.1rem 2.5rem; font-size: 1.25rem;" onclick="startGameRun()">Start Game</button>
+            </div>
+
+            <div id="restartOverlay" class="game-overlay-card" style="display: none;">
+              <h2>Congratulations! 🎉</h2>
+              <p id="finalTimeText">Your Time: 0.0s</p>
+              <p id="highScoreNoticeText" style="color: var(--success); font-weight: 700; display: none;">🏆 New High Score! 🏆</p>
+              <div style="display: flex; gap: 1rem;">
+                <button class="btn" onclick="resetAndRestartRun()">Play Again</button>
+                <button class="btn btn-secondary" onclick="switchView('leaderboard')">Leaderboards</button>
+              </div>
+            </div>
+
+            <div id="activeGameBox" style="display: none; width: 100%; flex-direction: column; align-items: center; gap: 1.75rem;">
+              <div id="typeModeHeader" class="type-mode-header" style="display: none;">
+                <div class="type-mode-toggle">
+                  <button class="type-mode-btn active" id="typeModeFull" onclick="setTypeTargetMode('full')">Full Name</button>
+                  <button class="type-mode-btn" id="typeModeFirst" onclick="setTypeTargetMode('first')">First Name</button>
+                </div>
+              </div>
+
+              <img id="gameImage" class="face-img" src="" alt="Face to recognize" style="display: none;">
+              
+              <div id="targetPrompt" class="target-prompt-text" style="display: none;"></div>
+
+              <div id="mcContainer" class="options-grid" style="display: none;"></div>
+              <div id="imgMcContainer" class="img-options-grid" style="display: none;"></div>
+
+              <div id="typeContainer" class="type-container-box">
+                <input type="text" id="typeInput" placeholder="Type full name..." autocomplete="off">
+                <button class="btn" onclick="checkTypeAnswer()">Submit Answer</button>
+              </div>
+
+              <div id="matchContainer" class="match-container" style="display: none;">
+                <div id="matchImages" class="match-column"></div>
+                <div id="matchNames" class="match-column"></div>
+              </div>
+
+              <div id="feedback" style="font-weight: 700; font-size: 1.25rem; min-height: 28px;"></div>
+            </div>
+
+          </div>
+
+          <div id="gameEmptyState" class="empty-state">
+            <h3>No Decks Available</h3>
+            <button class="btn" onclick="switchView('decks')">Create Your First Deck</button>
+          </div>
+        </section>
+
+        <!-- Leaderboards View -->
+        <section id="view-leaderboard" class="view">
+          <h2 style="font-size: 1.75rem;">Leaderboards</h2>
+          
+          <div class="leaderboard-card">
+            <div class="leaderboard-header">
+              <h3>Multiple Choice</h3>
+              <div class="user-stats-badge">
+                <div>Your rank: <span id="userRankMC">--</span></div>
+                <div>Your best time: <span id="userTimeMC">--</span></div>
+              </div>
+            </div>
+            <table class="leaderboard-table">
+              <thead><tr><th>Rank</th><th>Player</th><th>Time</th></tr></thead>
+              <tbody id="leaderboardMC"></tbody>
+            </table>
+          </div>
+
+          <div class="leaderboard-card">
+            <div class="leaderboard-header">
+              <h3>Type In</h3>
+              <div class="user-stats-badge">
+                <div>Your rank: <span id="userRankType">--</span></div>
+                <div>Your best time: <span id="userTimeType">--</span></div>
+              </div>
+            </div>
+            <table class="leaderboard-table">
+              <thead><tr><th>Rank</th><th>Player</th><th>Time</th></tr></thead>
+              <tbody id="leaderboardType"></tbody>
+            </table>
+          </div>
+
+          <div class="leaderboard-card">
+            <div class="leaderboard-header">
+              <h3>Matching</h3>
+              <div class="user-stats-badge">
+                <div>Your rank: <span id="userRankMatch">--</span></div>
+                <div>Your best time: <span id="userTimeMatch">--</span></div>
+              </div>
+            </div>
+            <table class="leaderboard-table">
+              <thead><tr><th>Rank</th><th>Player</th><th>Time</th></tr></thead>
+              <tbody id="leaderboardMatch"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Deck Management View -->
+        <section id="view-decks" class="view">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <h2 style="font-size: 1.75rem;">Your Decks</h2>
+            <button class="btn" onclick="showNewDeckModal()">+ Create Deck</button>
+          </div>
+          <div id="deckGrid" class="deck-grid"></div>
+        </section>
+
+        <!-- Edit Deck View -->
+        <section id="view-edit-deck" class="view">
+          <div style="display: flex; align-items: center; gap: 1rem;">
+            <div class="editable-title-container">
+              <input type="text" id="editDeckTitleInput" class="editable-title-input" onchange="updateDeckTitle(this.value)" title="Click to edit deck name">
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 style="font-size: 1.35rem;">Add Faces</h3>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">Auto-parses 'firstname.lastname.png'</p>
+            <form id="addCardForm" style="display: flex; flex-direction: column; gap: 1.25rem;">
+              <div class="file-input-wrapper">
+                <button type="button" class="btn-file-custom">
+                  <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"></path></svg>
+                  Choose Files
+                </button>
+                <input type="file" id="personImage" accept="image/*" multiple required onchange="updateFileLabel(this)">
+              </div>
+              <div id="fileChosenLabel" style="font-size: 0.95rem; color: var(--text-muted); text-align: center;">No files selected</div>
+              <button type="submit" class="btn" style="padding: 1rem;">Add Cards</button>
+            </form>
+          </div>
+
+          <h3 style="font-size: 1.35rem;">Cards in Deck</h3>
+          <div id="cardGrid" class="deck-grid"></div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /* Audio System using Web Audio API Synthesizer */
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playSound(type) {
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+
+      const now = audioCtx.currentTime;
+
+      if (type === 'correct') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(587.33, now); // D5
+        osc.frequency.exponentialRampToValueAtTime(880, now + 0.15); // A5
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.25);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.25);
+      } else if (type === 'wrong') {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(150, now);
+        osc.frequency.linearRampToValueAtTime(90, now + 0.25);
+        gain.gain.setValueAtTime(0.25, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      } else if (type === 'highscore') {
+        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        notes.forEach((freq, idx) => {
+          const osc = audioCtx.createOscillator();
+          const gain = audioCtx.createGain();
+          const start = now + idx * 0.1;
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(freq, start);
+          gain.gain.setValueAtTime(0.3, start);
+          gain.gain.exponentialRampToValueAtTime(0.01, start + 0.3);
+          osc.connect(gain);
+          gain.connect(audioCtx.destination);
+          osc.start(start);
+          osc.stop(start + 0.3);
+        });
+      }
+    }
+
+    /* Database Layer (IndexedDB with User Support) */
+    const DB_NAME = 'FaceRecallDB_v4';
+    const DB_VERSION = 1;
+    let db;
+
+    function initDB() {
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VERSION);
+        req.onupgradeneeded = (e) => {
+          const database = e.target.result;
+          if (!database.objectStoreNames.contains('users')) {
+            database.createObjectStore('users', { keyPath: 'username' });
+          }
+          if (!database.objectStoreNames.contains('decks')) {
+            database.createObjectStore('decks', { keyPath: 'id' });
+          }
+          if (!database.objectStoreNames.contains('leaderboards')) {
+            database.createObjectStore('leaderboards', { keyPath: 'id', autoIncrement: true });
+          }
+        };
+        req.onsuccess = (e) => { db = e.target.result; resolve(); };
+        req.onerror = (e) => reject(e.target.error);
+      });
+    }
+
+    /* User Authentication Methods */
+    let currentUser = null;
+
+    function registerUser(username, password, displayName) {
+      return new Promise((resolve, reject) => {
+        const tx = db.transaction('users', 'readwrite');
+        const store = tx.objectStore('users');
+        const cleanUser = username.toLowerCase().trim();
+        
+        const checkReq = store.get(cleanUser);
+        checkReq.onsuccess = () => {
+          if (checkReq.result) {
+            resolve({ success: false, message: 'Username already taken.' });
+          } else {
+            const userObj = {
+              username: cleanUser,
+              displayName: displayName.trim() || username,
+              password: password
+            };
+            store.put(userObj);
+            tx.oncomplete = () => resolve({ success: true, user: userObj });
+          }
+        };
+        checkReq.onerror = () => reject(checkReq.error);
+      });
+    }
+
+    function loginUser(username, password) {
+      return new Promise((resolve) => {
+        const tx = db.transaction('users', 'readonly');
+        const store = tx.objectStore('users');
+        const cleanUser = username.toLowerCase().trim();
+        const req = store.get(cleanUser);
+        
+        req.onsuccess = () => {
+          const user = req.result;
+          if (user && user.password === password) {
+            resolve({ success: true, user });
+          } else {
+            resolve({ success: false, message: 'Invalid username or password.' });
+          }
+        };
+        req.onerror = () => resolve({ success: false, message: 'Error accessing database.' });
+      });
+    }
+
+    function switchAuthTab(tab) {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      const tabLogin = document.getElementById('tabLogin');
+      const tabSignup = document.getElementById('tabSignup');
+      document.getElementById('loginError').textContent = '';
+      document.getElementById('signupError').textContent = '';
+
+      if (tab === 'login') {
+        loginForm.style.display = 'flex';
+        signupForm.style.display = 'none';
+        tabLogin.classList.add('active');
+        tabSignup.classList.remove('active');
+      } else {
+        loginForm.style.display = 'none';
+        signupForm.style.display = 'flex';
+        tabLogin.classList.remove('active');
+        tabSignup.classList.add('active');
+      }
+    }
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const u = document.getElementById('loginUsername').value;
+      const p = document.getElementById('loginPassword').value;
+      const err = document.getElementById('loginError');
+      err.textContent = '';
+
+      const res = await loginUser(u, p);
+      if (res.success) {
+        currentUser = res.user;
+        sessionStorage.setItem('faceRecall_currentUser', JSON.stringify(currentUser));
+        onLoggedIn();
+      } else {
+        err.textContent = res.message;
+      }
+    }
+
+    async function handleSignup(e) {
+      e.preventDefault();
+      const name = document.getElementById('signupName').value;
+      const u = document.getElementById('signupUsername').value;
+      const p = document.getElementById('signupPassword').value;
+      const err = document.getElementById('signupError');
+      err.textContent = '';
+
+      if (u.trim().length < 3) {
+        err.textContent = 'Username must be at least 3 characters.';
+        return;
+      }
+      if (p.length < 4) {
+        err.textContent = 'Password must be at least 4 characters.';
+        return;
+      }
+
+      const res = await registerUser(u, p, name);
+      if (res.success) {
+        currentUser = res.user;
+        sessionStorage.setItem('faceRecall_currentUser', JSON.stringify(currentUser));
+        onLoggedIn();
+      } else {
+        err.textContent = res.message;
+      }
+    }
+
+    function checkAuthSession() {
+      const savedUser = sessionStorage.getItem('faceRecall_currentUser');
+      if (savedUser) {
+        currentUser = JSON.parse(savedUser);
+        onLoggedIn();
+      } else {
+        onLoggedOut();
+      }
+    }
+
+    function onLoggedIn() {
+      document.getElementById('playerNameInput').value = currentUser.displayName;
+      document.getElementById('drawerLogoutBtn').style.display = 'flex';
+      switchView('welcome');
+    }
+
+    function logoutUser() {
+      currentUser = null;
+      sessionStorage.removeItem('faceRecall_currentUser');
+      document.getElementById('loginForm').reset();
+      document.getElementById('signupForm').reset();
+      onLoggedOut();
+    }
+
+    function onLoggedOut() {
+      document.getElementById('drawerLogoutBtn').style.display = 'none';
+      switchView('auth');
+    }
+
+    /* Deck Data Isolated per User */
+    function getAllDecks() {
+      return new Promise((resolve) => {
+        if (!currentUser) return resolve([]);
+        const tx = db.transaction('decks', 'readonly');
+        const req = tx.objectStore('decks').getAll();
+        req.onsuccess = () => {
+          const allDecks = req.result || [];
+          const userDecks = allDecks.filter(d => d.owner === currentUser.username);
+          resolve(userDecks);
+        };
+      });
+    }
+
+    function saveDeck(deck) {
+      return new Promise((resolve) => {
+        if (!currentUser) return resolve();
+        deck.owner = currentUser.username;
+        const tx = db.transaction('decks', 'readwrite');
+        tx.objectStore('decks').put(deck);
+        tx.oncomplete = () => resolve();
+      });
+    }
+
+    function deleteDeckFromDB(id) {
+      return new Promise((resolve) => {
+        const tx = db.transaction('decks', 'readwrite');
+        tx.objectStore('decks').delete(id);
+        tx.oncomplete = () => resolve();
+      });
+    }
+
+    function saveScore(scoreRecord) {
+      return new Promise((resolve) => {
+        const tx = db.transaction('leaderboards', 'readwrite');
+        tx.objectStore('leaderboards').add(scoreRecord);
+        tx.oncomplete = () => resolve();
+      });
+    }
+
+    function getScores() {
+      return new Promise((resolve) => {
+        const tx = db.transaction('leaderboards', 'readonly');
+        const req = tx.objectStore('leaderboards').getAll();
+        req.onsuccess = () => resolve(req.result || []);
+      });
+    }
+
+    /* Filename Parser Function */
+    function parseNameFromFilename(filename) {
+      const nameWithoutExt = filename.replace(/\.[^/.]+$/, "");
+      const parts = nameWithoutExt.split(/[\._-]+/);
+      return parts
+        .filter(part => part.length > 0)
+        .map(part => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+        .join(' ');
+    }
+
+    /* Navigation */
+    let currentViewId = 'auth';
+
+    function switchView(viewId) {
+      clearTimeout(autoAdvanceTimer);
+      stopCompetitiveTimer();
+
+      if (!currentUser && viewId !== 'auth') {
+        viewId = 'auth';
+      }
+
+      currentViewId = viewId;
+
+      // Show 3-bars menu everywhere EXCEPT on the login/signup screen
+      const menuBtn = document.getElementById('openDrawer');
+      if (menuBtn) {
+        menuBtn.style.display = (viewId === 'auth') ? 'none' : 'grid';
+      }
+
+      // Hide back button on welcome and auth screens
+      const backBtn = document.getElementById('globalBackBtn');
+      if (backBtn) {
+        backBtn.style.display = (viewId === 'welcome' || viewId === 'auth') ? 'none' : 'grid';
+      }
+
+      document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+      const activeView = document.getElementById(`view-${viewId}`);
+      if (activeView) activeView.classList.add('active');
+      
+      document.querySelectorAll('.drawer-btn').forEach(btn => btn.classList.remove('active'));
+      const activeBtn = Array.from(document.querySelectorAll('.drawer-btn')).find(b => b.textContent.toLowerCase().includes(viewId));
+      if (activeBtn) activeBtn.classList.add('active');
+
+      closeDrawer();
+
+      if (viewId === 'game') setupGame();
+      if (viewId === 'decks') renderDecks();
+      if (viewId === 'leaderboard') renderLeaderboards();
+    }
+
+    function goHome() {
+      switchView(currentUser ? 'welcome' : 'auth');
+    }
+
+    /* Drawer Controls */
+    const drawer = document.getElementById('drawer');
+    const drawerOverlay = document.getElementById('drawerOverlay');
+
+    document.getElementById('openDrawer').addEventListener('click', () => {
+      drawer.classList.add('active');
+      drawerOverlay.classList.add('active');
+    });
+
+    drawerOverlay.addEventListener('click', closeDrawer);
+
+    function closeDrawer() {
+      drawer.classList.remove('active');
+      drawerOverlay.classList.remove('active');
+    }
+
+    /* App Modes & Timers */
+    let appMode = 'learning';
+    let timerInterval = null;
+    let startTime = 0;
+    let elapsedTime = 0;
+    
+    /* Session Target Queue */
+    let totalTargetCards = 5;
+    let cardsCompleted = 0;
+
+    function startAppMode(mode) {
+      appMode = mode;
+      const badge = document.getElementById('appModeBadge');
+      badge.textContent = mode;
+      badge.className = `mode-badge ${mode}`;
+      
+      document.getElementById('competitiveTimerDisplay').style.display = mode === 'competitive' ? 'flex' : 'none';
+      switchView('game');
+    }
+
+    function startCompetitiveTimer() {
+      stopCompetitiveTimer();
+      elapsedTime = 0;
+      startTime = Date.now();
+      document.getElementById('timerSeconds').textContent = '0.0';
+
+      timerInterval = setInterval(() => {
+        elapsedTime = (Date.now() - startTime) / 1000;
+        document.getElementById('timerSeconds').textContent = elapsedTime.toFixed(1);
+      }, 100);
+    }
+
+    function stopCompetitiveTimer() {
+      if (timerInterval) clearInterval(timerInterval);
+      timerInterval = null;
+    }
+
+    /* State Management */
+    let decks = [];
+    let currentDeck = null;
+    let currentCard = null;
+    let gameMode = 'mc';
+    let gameDirection = 'faceToName';
+    let typeTargetMode = 'full'; 
+    let autoAdvanceTimer = null;
+
+    /* Card Queue Management */
+    let cardQueue = [];
+
+    function refillCardQueue() {
+      if (!currentDeck || currentDeck.cards.length === 0) {
+        cardQueue = [];
+        return;
+      }
+      cardQueue = [...currentDeck.cards].sort(() => 0.5 - Math.random());
+    }
+
+    function getNextCardFromQueue() {
+      if (cardQueue.length === 0) {
+        refillCardQueue();
+      }
+      return cardQueue.pop();
+    }
+
+    /* Matching Game State */
+    let matchesRemaining = 0;
+    let draggedCardId = null;
+
+    /* Theme Controls */
+    const themeToggle = document.getElementById('themeToggle');
+    const accentPicker = document.getElementById('accentPicker');
+
+    themeToggle.addEventListener('click', () => {
+      const html = document.documentElement;
+      const nextTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', nextTheme);
+    });
+
+    accentPicker.addEventListener('input', (e) => {
+      document.documentElement.style.setProperty('--accent', e.target.value);
+    });
+
+    /* File Selection Helper */
+    function updateFileLabel(input) {
+      const label = document.getElementById('fileChosenLabel');
+      if (input.files.length === 1) {
+        label.textContent = input.files[0].name;
+      } else if (input.files.length > 1) {
+        label.textContent = `${input.files.length} files selected`;
+      } else {
+        label.textContent = 'No files selected';
+      }
+    }
+
+    /* Deck Management Functions */
+    async function renderDecks() {
+      decks = await getAllDecks();
+      const grid = document.getElementById('deckGrid');
+      grid.innerHTML = '';
+
+      if (decks.length === 0) {
+        grid.innerHTML = `<p style="grid-column: 1/-1; color: var(--text-muted);">No decks available. Click "+ Create Deck" to build one.</p>`;
+        return;
+      }
+
+      decks.forEach(deck => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card';
+        cardEl.innerHTML = `
+          <h3 style="font-size: 1.35rem;">${deck.title}</h3>
+          <p style="color: var(--text-muted);">${deck.cards.length} cards</p>
+          <div style="display: flex; gap: 0.5rem; margin-top: auto;">
+            <button class="btn" style="flex:1" onclick="editDeck('${deck.id}')">Edit</button>
+            <button class="btn btn-danger" onclick="removeDeck('${deck.id}')">Delete</button>
+          </div>
+        `;
+        grid.appendChild(cardEl);
+      });
+    }
+
+    async function showNewDeckModal() {
+      const title = prompt('Enter deck title:');
+      if (!title) return;
+      const newDeck = { id: Date.now().toString(), owner: currentUser.username, title, cards: [] };
+      await saveDeck(newDeck);
+      renderDecks();
+    }
+
+    async function removeDeck(id) {
+      if (confirm('Are you sure you want to delete this deck?')) {
+        await deleteDeckFromDB(id);
+        renderDecks();
+      }
+    }
+
+    let editingDeckId = null;
+    async function editDeck(id) {
+      editingDeckId = id;
+      const allDecks = await getAllDecks();
+      currentDeck = allDecks.find(d => d.id === id);
+      document.getElementById('editDeckTitleInput').value = currentDeck.title;
+      renderCardGrid();
+      switchView('edit-deck');
+    }
+
+    async function updateDeckTitle(newTitle) {
+      if (!newTitle.trim() || !currentDeck) return;
+      currentDeck.title = newTitle.trim();
+      await saveDeck(currentDeck);
+    }
+
+    function renderCardGrid() {
+      const grid = document.getElementById('cardGrid');
+      grid.innerHTML = '';
+      currentDeck.cards.forEach((card, idx) => {
+        const cardEl = document.createElement('div');
+        cardEl.className = 'card';
+        cardEl.innerHTML = `
+          <img src="${card.image}" style="width:100%; height:160px; object-fit:cover; object-position:top center; border-radius: var(--radius)">
+          <input type="text" value="${card.name}" onchange="updateCardName(${idx}, this.value)">
+          <button class="btn btn-danger" onclick="deleteCard(${idx})">Remove</button>
+        `;
+        grid.appendChild(cardEl);
+      });
+    }
+
+    async function updateCardName(idx, newName) {
+      if (!newName.trim()) return;
+      currentDeck.cards[idx].name = newName.trim();
+      await saveDeck(currentDeck);
+    }
+
+    /* Upload Form Handler */
+    document.getElementById('addCardForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const fileInput = document.getElementById('personImage');
+      const files = Array.from(fileInput.files);
+
+      if (files.length === 0) return;
+
+      const promises = files.map((file) => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = (evt) => {
+            const cardName = parseNameFromFilename(file.name);
+
+            currentDeck.cards.push({
+              id: Date.now().toString() + Math.random().toString(36).substring(2, 6),
+              name: cardName,
+              image: evt.target.result,
+              hits: 0,
+              misses: 0
+            });
+            resolve();
+          };
+          reader.readAsDataURL(file);
+        });
+      });
+
+      await Promise.all(promises);
+      await saveDeck(currentDeck);
+      document.getElementById('addCardForm').reset();
+      document.getElementById('fileChosenLabel').textContent = 'No files selected';
+      renderCardGrid();
+    });
+
+    async function deleteCard(idx) {
+      currentDeck.cards.splice(idx, 1);
+      await saveDeck(currentDeck);
+      renderCardGrid();
+    }
+
+    /* Game Setup & Run Management */
+    async function setupGame() {
+      decks = await getAllDecks();
+      const select = document.getElementById('deckSelect');
+      select.innerHTML = '';
+
+      if (decks.length === 0) {
+        document.getElementById('gameContainer').style.display = 'none';
+        document.getElementById('gameEmptyState').style.display = 'flex';
+        return;
+      }
+
+      document.getElementById('gameEmptyState').style.display = 'none';
+      document.getElementById('gameContainer').style.display = 'flex';
+
+      decks.forEach(deck => {
+        const opt = document.createElement('option');
+        opt.value = deck.id;
+        opt.textContent = `${deck.title} (${deck.cards.length} cards)`;
+        select.appendChild(opt);
+      });
+
+      loadSelectedDeck();
+    }
+
+    function loadSelectedDeck() {
+      const id = document.getElementById('deckSelect').value;
+      currentDeck = decks.find(d => d.id === id);
+      refillCardQueue();
+      showStartOverlay();
+    }
+
+    function showStartOverlay() {
+      stopCompetitiveTimer();
+      document.getElementById('startOverlay').style.display = 'flex';
+      document.getElementById('restartOverlay').style.display = 'none';
+      document.getElementById('activeGameBox').style.display = 'none';
+
+      const descText = document.getElementById('startDescText');
+      if (appMode === 'learning') {
+        descText.textContent = 'Press start to begin learning!';
+      } else {
+        descText.textContent = 'Get 5 correct answers as fast as you can!';
+      }
+    }
+
+    function startGameRun() {
+      document.getElementById('startOverlay').style.display = 'none';
+      document.getElementById('restartOverlay').style.display = 'none';
+      document.getElementById('activeGameBox').style.display = 'flex';
+
+      cardsCompleted = 0;
+      totalTargetCards = 5;
+
+      refillCardQueue();
+
+      if (appMode === 'competitive') {
+        startCompetitiveTimer();
+      }
+
+      nextCard();
+    }
+
+    async function finishRun() {
+      stopCompetitiveTimer();
+      let isHighScore = false;
+
+      if (appMode === 'competitive') {
+        isHighScore = await recordCompetitiveScore();
+      }
+
+      document.getElementById('activeGameBox').style.display = 'none';
+      document.getElementById('restartOverlay').style.display = 'flex';
+      document.getElementById('finalTimeText').textContent = appMode === 'competitive' 
+        ? `Your Final Time: ${elapsedTime.toFixed(1)}s` 
+        : `Run Completed!`;
+
+      const hsNotice = document.getElementById('highScoreNoticeText');
+      if (isHighScore) {
+        hsNotice.style.display = 'block';
+        playSound('highscore');
+      } else {
+        hsNotice.style.display = 'none';
+      }
+    }
+
+    function resetAndRestartRun() {
+      startGameRun();
+    }
+
+    function setDirection(dir) {
+      gameDirection = dir;
+      document.getElementById('dirFaceToName').classList.toggle('active', dir === 'faceToName');
+      document.getElementById('dirNameToFace').classList.toggle('active', dir === 'nameToFace');
+      showStartOverlay();
+    }
+
+    function setGameMode(mode) {
+      gameMode = mode;
+      document.getElementById('modeMC').classList.toggle('active', mode === 'mc');
+      document.getElementById('modeType').classList.toggle('active', mode === 'type');
+      document.getElementById('modeMatch').classList.toggle('active', mode === 'match');
+
+      showStartOverlay();
+    }
+
+    function setTypeTargetMode(mode) {
+      typeTargetMode = mode;
+      document.getElementById('typeModeFull').classList.toggle('active', mode === 'full');
+      document.getElementById('typeModeFirst').classList.toggle('active', mode === 'first');
+      
+      const input = document.getElementById('typeInput');
+      input.placeholder = mode === 'first' ? 'Type first name...' : 'Type full name...';
+      input.focus();
+    }
+
+    function nextCard() {
+      clearTimeout(autoAdvanceTimer);
+      document.getElementById('feedback').textContent = '';
+      document.getElementById('typeInput').value = '';
+
+      if (!currentDeck || currentDeck.cards.length === 0) {
+        document.getElementById('gameContainer').style.display = 'none';
+        document.getElementById('gameEmptyState').style.display = 'flex';
+        return;
+      }
+
+      if (gameMode === 'match') {
+        renderMatchView();
+        return;
+      }
+
+      currentCard = getNextCardFromQueue();
+      renderCardView();
+    }
+
+    function renderCardView() {
+      const gameImage = document.getElementById('gameImage');
+      const targetPrompt = document.getElementById('targetPrompt');
+      const mcContainer = document.getElementById('mcContainer');
+      const imgMcContainer = document.getElementById('imgMcContainer');
+      const typeContainer = document.getElementById('typeContainer');
+      const typeModeHeader = document.getElementById('typeModeHeader');
+      const matchContainer = document.getElementById('matchContainer');
+
+      gameImage.style.display = 'none';
+      targetPrompt.style.display = 'none';
+      mcContainer.style.display = 'none';
+      imgMcContainer.style.display = 'none';
+      typeContainer.style.display = 'none';
+      typeModeHeader.style.display = 'none';
+      matchContainer.style.display = 'none';
+
+      if (gameDirection === 'faceToName') {
+        gameImage.style.display = 'block';
+        gameImage.src = currentCard.image;
+
+        if (gameMode === 'mc') {
+          mcContainer.style.display = 'grid';
+          mcContainer.innerHTML = '';
+          
+          let distractors = currentDeck.cards
+            .filter(c => c.name !== currentCard.name)
+            .map(c => c.name);
+          
+          distractors = distractors.sort(() => 0.5 - Math.random()).slice(0, 3);
+          const options = [currentCard.name, ...distractors].sort(() => 0.5 - Math.random());
+
+          options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'mc-btn';
+            btn.textContent = opt;
+            btn.onclick = () => checkMCAnswer(opt, btn);
+            mcContainer.appendChild(btn);
+          });
+        } else if (gameMode === 'type') {
+          typeContainer.style.display = 'flex';
+          typeModeHeader.style.display = 'flex';
+          document.getElementById('typeInput').focus();
+        }
+      } else {
+        targetPrompt.style.display = 'block';
+        targetPrompt.textContent = currentCard.name;
+
+        if (gameMode === 'mc' || gameMode === 'type') {
+          imgMcContainer.style.display = 'grid';
+          imgMcContainer.innerHTML = '';
+
+          let distractors = currentDeck.cards
+            .filter(c => c.id !== currentCard.id);
+          
+          distractors = distractors.sort(() => 0.5 - Math.random()).slice(0, 3);
+          const options = [currentCard, ...distractors].sort(() => 0.5 - Math.random());
+
+          options.forEach(optCard => {
+            const btn = document.createElement('button');
+            btn.className = 'img-option-btn';
+            btn.innerHTML = `<img src="${optCard.image}">`;
+            btn.onclick = () => checkImgMCAnswer(optCard, btn);
+            imgMcContainer.appendChild(btn);
+          });
+        }
+      }
+    }
+
+    /* Drag & Drop Matching View */
+    function renderMatchView() {
+      const matchImages = document.getElementById('matchImages');
+      const matchNames = document.getElementById('matchNames');
+      matchImages.innerHTML = '';
+      matchNames.innerHTML = '';
+
+      document.getElementById('gameImage').style.display = 'none';
+      document.getElementById('targetPrompt').style.display = 'none';
+      document.getElementById('mcContainer').style.display = 'none';
+      document.getElementById('imgMcContainer').style.display = 'none';
+      document.getElementById('typeContainer').style.display = 'none';
+      document.getElementById('typeModeHeader').style.display = 'none';
+      document.getElementById('matchContainer').style.display = 'grid';
+
+      draggedCardId = null;
+
+      let roundCards = [...currentDeck.cards];
+      if (roundCards.length > 5) {
+        roundCards = roundCards.sort(() => 0.5 - Math.random()).slice(0, 5);
+      }
+      matchesRemaining = roundCards.length;
+
+      const shuffledImages = [...roundCards].sort(() => 0.5 - Math.random());
+      const shuffledNames = [...roundCards].sort(() => 0.5 - Math.random());
+
+      shuffledImages.forEach(card => {
+        const el = document.createElement('div');
+        el.className = 'match-card draggable';
+        el.draggable = true;
+        el.dataset.id = card.id;
+        el.innerHTML = `<img src="${card.image}" class="match-img">`;
+
+        el.addEventListener('dragstart', (e) => {
+          draggedCardId = card.id;
+          el.classList.add('dragging');
+          e.dataTransfer.setData('text/plain', card.id);
+        });
+
+        el.addEventListener('dragend', () => {
+          el.classList.remove('dragging');
+        });
+
+        matchImages.appendChild(el);
+      });
+
+      shuffledNames.forEach(card => {
+        const el = document.createElement('div');
+        el.className = 'match-card dropzone';
+        el.dataset.id = card.id;
+        el.textContent = card.name;
+
+        el.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          if (!el.classList.contains('matched')) {
+            el.classList.add('drag-over');
+          }
+        });
+
+        el.addEventListener('dragleave', () => {
+          el.classList.remove('drag-over');
+        });
+
+        el.addEventListener('drop', (e) => {
+          e.preventDefault();
+          el.classList.remove('drag-over');
+          if (el.classList.contains('matched')) return;
+
+          const droppedId = e.dataTransfer.getData('text/plain') || draggedCardId;
+          checkMatchDrag(droppedId, card.id, el);
+        });
+
+        matchNames.appendChild(el);
+      });
+    }
+
+    async function checkMatchDrag(draggedId, targetId, dropEl) {
+      const imgEl = document.querySelector(`#matchImages .match-card[data-id="${draggedId}"]`);
+      const targetCard = currentDeck.cards.find(c => c.id === draggedId);
+
+      if (draggedId === targetId) {
+        playSound('correct');
+        if (targetCard) targetCard.hits++;
+        
+        imgEl.classList.add('matched');
+        dropEl.classList.add('matched');
+        imgEl.draggable = false;
+
+        matchesRemaining--;
+        if (matchesRemaining === 0) {
+          document.getElementById('feedback').textContent = 'All matched! Great job!';
+          document.getElementById('feedback').style.color = 'var(--success)';
+          autoAdvanceTimer = setTimeout(finishRun, 1200);
+        }
+      } else {
+        playSound('wrong');
+        if (targetCard) targetCard.misses++;
+        
+        dropEl.classList.add('wrong-drop');
+        setTimeout(() => {
+          dropEl.classList.remove('wrong-drop');
+        }, 400);
+      }
+
+      await saveDeck(currentDeck);
+    }
+
+    async function checkMCAnswer(selected, btn) {
+      const buttons = document.querySelectorAll('.mc-btn');
+      buttons.forEach(b => b.disabled = true);
+
+      let delay = 1200;
+
+      if (selected === currentCard.name) {
+        playSound('correct');
+        btn.classList.add('correct');
+        currentCard.hits++;
+        document.getElementById('feedback').textContent = 'Correct!';
+        document.getElementById('feedback').style.color = 'var(--success)';
+        cardsCompleted++;
+      } else {
+        playSound('wrong');
+        btn.classList.add('wrong');
+        currentCard.misses++;
+        if (appMode === 'learning') {
+          totalTargetCards++;
+        }
+        document.getElementById('feedback').textContent = `Wrong! It's ${currentCard.name}`;
+        document.getElementById('feedback').style.color = 'var(--danger)';
+        delay = 2000;
+      }
+
+      await saveDeck(currentDeck);
+
+      if (cardsCompleted >= totalTargetCards) {
+        autoAdvanceTimer = setTimeout(finishRun, delay);
+        return;
+      }
+
+      autoAdvanceTimer = setTimeout(nextCard, delay);
+    }
+
+    async function checkImgMCAnswer(selectedCard, btn) {
+      const buttons = document.querySelectorAll('.img-option-btn');
+      buttons.forEach(b => b.disabled = true);
+
+      let delay = 1200;
+
+      if (selectedCard.id === currentCard.id) {
+        playSound('correct');
+        btn.classList.add('correct');
+        currentCard.hits++;
+        document.getElementById('feedback').textContent = 'Correct!';
+        document.getElementById('feedback').style.color = 'var(--success)';
+        cardsCompleted++;
+      } else {
+        playSound('wrong');
+        btn.classList.add('wrong');
+        currentCard.misses++;
+        if (appMode === 'learning') {
+          totalTargetCards++;
+        }
+        document.getElementById('feedback').textContent = `Wrong! That was ${selectedCard.name}`;
+        document.getElementById('feedback').style.color = 'var(--danger)';
+        delay = 2000;
+      }
+
+      await saveDeck(currentDeck);
+
+      if (cardsCompleted >= totalTargetCards) {
+        autoAdvanceTimer = setTimeout(finishRun, delay);
+        return;
+      }
+
+      autoAdvanceTimer = setTimeout(nextCard, delay);
+    }
+
+    async function checkTypeAnswer() {
+      const input = document.getElementById('typeInput');
+      const val = input.value.trim();
+      if (!val) return;
+
+      input.disabled = true;
+      let delay = 1200;
+
+      let targetName = currentCard.name;
+      if (typeTargetMode === 'first') {
+        targetName = currentCard.name.split(' ')[0];
+      }
+
+      if (val.toLowerCase() === targetName.toLowerCase()) {
+        playSound('correct');
+        currentCard.hits++;
+        document.getElementById('feedback').textContent = 'Correct!';
+        document.getElementById('feedback').style.color = 'var(--success)';
+        cardsCompleted++;
+      } else {
+        playSound('wrong');
+        currentCard.misses++;
+        if (appMode === 'learning') {
+          totalTargetCards++;
+        }
+        document.getElementById('feedback').textContent = `Wrong! Correct name: ${targetName}`;
+        document.getElementById('feedback').style.color = 'var(--danger)';
+        delay = 2000;
+      }
+
+      await saveDeck(currentDeck);
+
+      if (cardsCompleted >= totalTargetCards) {
+        autoAdvanceTimer = setTimeout(finishRun, delay);
+        return;
+      }
+
+      autoAdvanceTimer = setTimeout(() => {
+        input.disabled = false;
+        nextCard();
+      }, delay);
+    }
+
+    document.getElementById('typeInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') checkTypeAnswer();
+    });
+
+    /* Competitive Score Recording & High Score Check */
+    async function recordCompetitiveScore() {
+      const playerName = currentUser ? currentUser.displayName : (document.getElementById('playerNameInput').value.trim() || 'Player 1');
+      const scores = await getScores();
+      const modeScores = scores.filter(s => s.mode === gameMode && s.player.toLowerCase() === playerName.toLowerCase());
+      
+      const previousBest = modeScores.length > 0 ? Math.min(...modeScores.map(s => s.time)) : Infinity;
+      const currentScoreTime = parseFloat(elapsedTime.toFixed(1));
+
+      const scoreRecord = {
+        player: playerName,
+        time: currentScoreTime,
+        mode: gameMode,
+        date: new Date().toLocaleDateString()
+      };
+      await saveScore(scoreRecord);
+
+      return currentScoreTime < previousBest;
+    }
+
+    async function renderLeaderboards() {
+      const scores = await getScores();
+      const currentPlayerName = (currentUser ? currentUser.displayName : document.getElementById('playerNameInput').value.trim() || 'Player 1').toLowerCase();
+      
+      const renderTable = (modeId, elementId, rankElId, timeElId) => {
+        const tbody = document.getElementById(elementId);
+        tbody.innerHTML = '';
+        
+        const allModeScores = scores
+          .filter(s => s.mode === modeId)
+          .sort((a, b) => a.time - b.time);
+
+        const userScores = allModeScores.filter(s => s.player.toLowerCase() === currentPlayerName);
+        if (userScores.length > 0) {
+          const bestUserScore = userScores[0];
+          const rankIndex = allModeScores.findIndex(s => s === bestUserScore) + 1;
+          document.getElementById(rankElId).textContent = `#${rankIndex}`;
+          document.getElementById(timeElId).textContent = `${bestUserScore.time.toFixed(1)}s`;
+        } else {
+          document.getElementById(rankElId).textContent = '--';
+          document.getElementById(timeElId).textContent = '--';
+        }
+
+        const top10 = allModeScores.slice(0, 10);
+
+        if (top10.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3" style="color:var(--text-muted)">No scores yet</td></tr>';
+          return;
+        }
+
+        top10.forEach((s, idx) => {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td>#${idx + 1}</td>
+            <td><strong>${s.player}</strong></td>
+            <td>${s.time.toFixed(1)}s</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      };
+
+      renderTable('mc', 'leaderboardMC', 'userRankMC', 'userTimeMC');
+      renderTable('type', 'leaderboardType', 'userRankType', 'userTimeType');
+      renderTable('match', 'leaderboardMatch', 'userRankMatch', 'userTimeMatch');
+    }
+
+    // Initialize Database and Check Session
+    initDB().then(() => {
+      checkAuthSession();
+    });
+  </script>
+</body>
+</html>
