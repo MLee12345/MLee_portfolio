@@ -871,7 +871,7 @@
         event.preventDefault();
 
         const cardTop = target.getBoundingClientRect().top + window.scrollY;
-        const peekOffset = window.innerWidth < 700 ? 68 : 92;
+        const peekOffset = window.innerWidth < 700 ? 44 : 56;
         window.scrollTo({
           top: Math.max(0, cardTop - peekOffset),
           behavior: "smooth"
