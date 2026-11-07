@@ -49,6 +49,10 @@
     header {
       padding: 38px 0 24px;
       border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
     }
 
     .eyebrow {
@@ -68,6 +72,17 @@
       letter-spacing: 0;
       font-family: Georgia, "Times New Roman", serif;
       font-weight: 700;
+    }
+
+    .site-corner {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.66);
+      color: var(--muted);
+      padding: 9px 12px;
+      font-size: 0.8rem;
+      font-weight: 850;
+      white-space: nowrap;
     }
 
     .nav {
@@ -121,6 +136,33 @@
       border-radius: var(--radius);
       box-shadow: var(--shadow);
       overflow: hidden;
+      position: relative;
+    }
+
+    .project-toolbar {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      z-index: 2;
+      display: flex;
+      gap: 8px;
+    }
+
+    .mini-link {
+      min-height: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border-radius: 999px;
+      border: 1px solid color-mix(in srgb, var(--accent), #1f211d 20%);
+      background: rgba(255, 255, 255, 0.88);
+      color: var(--ink);
+      padding: 7px 12px;
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-weight: 900;
+      backdrop-filter: blur(10px);
     }
 
     .project-grid {
@@ -226,11 +268,6 @@
       color: var(--ink);
     }
 
-    .button.icon-only {
-      width: 44px;
-      padding: 0;
-    }
-
     .button.primary {
       background: var(--accent);
       color: white;
@@ -282,7 +319,7 @@
 
     .shot-track {
       display: flex;
-      overflow-x: auto;
+      overflow: hidden;
       scroll-snap-type: x mandatory;
       scrollbar-width: none;
     }
@@ -317,9 +354,10 @@
     }
 
     .github-icon {
-      width: 18px;
-      height: 18px;
+      width: 20px;
+      height: 20px;
       display: block;
+      flex: 0 0 auto;
     }
 
     .arrow-icon {
@@ -327,55 +365,22 @@
       height: 14px;
       display: block;
     }
-      overflow: hidden;
-      box-shadow: -8px 0 22px rgba(26, 115, 232, 0.12);
-    }
 
-    .tabs {
-      height: 34px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      border-bottom: 1px solid #dadce0;
-      color: #5f6368;
-      font-size: 0.58rem;
-      font-weight: 850;
-      text-align: center;
-    }
-
-    .tabs span {
-      display: grid;
-      place-items: center;
-    }
-
-    .suggestions {
-      padding: 10px;
-      display: grid;
-      gap: 8px;
-    }
-
-    .suggestion {
-      min-height: 42px;
-      border: 1px solid #dadce0;
-      background: #f8fbff;
-      border-radius: 7px;
-    }
-
-    .preview-caption {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
+    .download-note {
       color: var(--muted);
-      font-size: 0.86rem;
-    }
-
-    .preview-caption strong {
-      color: var(--ink);
+      font-size: 0.82rem;
+      margin: -12px 0 0;
+      max-width: 42ch;
     }
 
     @media (max-width: 900px) {
       header,
       .project-grid {
         grid-template-columns: 1fr;
+      }
+
+      header {
+        display: grid;
       }
 
       .project-copy {
@@ -409,6 +414,12 @@
       .shot img {
         height: 201px;
       }
+
+      .project-toolbar {
+        position: static;
+        padding: 14px 14px 0;
+        justify-content: flex-end;
+      }
     }
   </style>
 </head>
@@ -419,6 +430,7 @@
         <p class="eyebrow">MLee Portfolio</p>
         <h1>Projects that solve real problems.</h1>
       </div>
+      <div class="site-corner">5 projects • live previews</div>
     </header>
 
     <nav class="nav" id="nav" aria-label="Project navigation"></nav>
@@ -439,7 +451,10 @@
         code: "https://github.com/MLee12345/finish_fast",
         screenshots: [
           { src: "assets/screenshots/finish-fast-budget.png", alt: "FinishFast bedtime budget and homework queue" },
-          { src: "assets/screenshots/finish-fast-focus.png", alt: "FinishFast focus timer screen" }
+          { src: "assets/screenshots/finish-fast-overrun-options.png", alt: "FinishFast overrun resolution options" },
+          { src: "assets/screenshots/finish-fast-focus.png", alt: "FinishFast focus timer screen" },
+          { src: "assets/screenshots/finish-fast-checkin.png", alt: "FinishFast focus check-in prompt" },
+          { src: "assets/screenshots/finish-fast-completed.png", alt: "FinishFast completed task filter" }
         ],
         problem: "Students can underestimate how much time is left once homework, fixed commitments, deadlines, and bedtime collide.",
         solution: "FinishFast turns the evening into a live time budget with task duration, fixed commitments, buffer time, overrun warnings, and a focus timer.",
@@ -457,7 +472,10 @@
         code: "https://github.com/MLee12345/dopamine_live",
         screenshots: [
           { src: "assets/screenshots/dopamine-live-discover.png", alt: "DopamineLive concert discovery marketplace" },
-          { src: "assets/screenshots/dopamine-live-seats.png", alt: "DopamineLive seat selection flow" }
+          { src: "assets/screenshots/dopamine-live-seats.png", alt: "DopamineLive seat selection flow" },
+          { src: "assets/screenshots/dopamine-live-checkout.png", alt: "DopamineLive checkout screen" },
+          { src: "assets/screenshots/dopamine-live-profile.png", alt: "DopamineLive profile history screen" },
+          { src: "assets/screenshots/dopamine-live-wallet.png", alt: "DopamineLive ticket wallet screen" }
         ],
         problem: "Ticketing sites make discovery, seats, scarcity, checkout, and merch feel intense, but prototypes rarely let people safely explore that full loop.",
         solution: "DopamineLive simulates a live-event marketplace where users browse shows, pick seats, claim virtual tickets, enter a stage, and buy virtual merch.",
@@ -471,11 +489,17 @@
         type: "Google Calendar assistant extension",
         accent: "#1a73e8",
         label: "Calendar email assistant",
+        live: "assets/gsifter-demo.html",
+        previewText: "Preview demo",
         code: "https://github.com/MLee12345/gSifter",
         download: "assets/gSifter-extension.zip",
+        downloadNote: "Download gives you a ZIP for loading the Chrome extension manually; it does not install itself.",
         screenshots: [
-          { src: "assets/screenshots/gsifter-suggestions.png", alt: "gSifter detected events panel" },
-          { src: "assets/screenshots/gsifter-chat.png", alt: "gSifter chat rule panel" }
+          { src: "assets/screenshots/gsifter-calendar-sidebar.png", alt: "gSifter mock calendar with sidebar suggestions" },
+          { src: "assets/screenshots/gsifter-add-event.png", alt: "gSifter adding a detected event to the mock calendar" },
+          { src: "assets/screenshots/gsifter-chat-rules.png", alt: "gSifter chat rules beside mock calendar" },
+          { src: "assets/screenshots/gsifter-fake-api-rule.png", alt: "gSifter fake API chat rule saved" },
+          { src: "assets/screenshots/gsifter-settings.png", alt: "gSifter fake API settings panel" }
         ],
         problem: "Useful events can get buried in emails and calendar clutter, and manually turning them into clean calendar entries takes attention.",
         solution: "gSifter adds a sidebar to Google Calendar for detected event suggestions, chat-based filtering rules, connected accounts, and privacy settings.",
@@ -492,8 +516,11 @@
         live: "https://face-recall.vercel.app/",
         code: "https://github.com/MLee12345/face_recall",
         screenshots: [
+          { src: "assets/screenshots/face-recall-welcome.png", alt: "Face Recall welcome screen" },
+          { src: "assets/screenshots/face-recall-decks.png", alt: "Face Recall deck management screen" },
           { src: "assets/screenshots/face-recall-game.png", alt: "Face Recall quiz mode" },
-          { src: "assets/screenshots/face-recall-match.png", alt: "Face Recall matching mode" }
+          { src: "assets/screenshots/face-recall-match.png", alt: "Face Recall matching mode" },
+          { src: "assets/screenshots/face-recall-leaderboard.png", alt: "Face Recall leaderboard screen" }
         ],
         problem: "Face recognition is a useful social skill, but practice tools can feel clinical instead of inviting.",
         solution: "Face Recall frames recognition as a card-based memory game with account states, profile flow, theme settings, and game navigation.",
@@ -511,7 +538,10 @@
         code: "https://github.com/MLee12345/route_us",
         screenshots: [
           { src: "assets/screenshots/route-us-dashboard.png", alt: "RouteUs dashboard with carpool group" },
-          { src: "assets/screenshots/route-us-group.png", alt: "RouteUs group schedule calendar" }
+          { src: "assets/screenshots/route-us-group.png", alt: "RouteUs group schedule calendar" },
+          { src: "assets/screenshots/route-us-availability.png", alt: "RouteUs availability editing screen" },
+          { src: "assets/screenshots/route-us-profile.png", alt: "RouteUs profile settings screen" },
+          { src: "assets/screenshots/route-us-dark.png", alt: "RouteUs dark mode dashboard" }
         ],
         problem: "Carpool groups need to coordinate kids, seats, availability, route details, and updates without spreading the plan across texts.",
         solution: "RouteUs gives families shared groups with join codes, profiles, availability editing, driver/rider views, week schedules, and group chat.",
@@ -552,6 +582,9 @@
 
       mount.innerHTML = projects.map((project, index) => `
         <article class="project" id="${project.id}" style="--accent:${project.accent}">
+          <div class="project-toolbar">
+            <a class="mini-link" href="${project.live}" target="_blank" rel="noreferrer">${project.previewText || "Preview"} ${arrowIcon()}</a>
+          </div>
           <div class="project-grid">
             <section class="project-copy">
               <div class="project-top">
@@ -579,8 +612,9 @@
               </div>
               <div class="actions">
                 ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<a class="button primary" href="${project.live}" target="_blank" rel="noreferrer">Open project ${arrowIcon()}</a>`}
-                <a class="button icon-only" href="${project.code}" target="_blank" rel="noreferrer" title="View code on GitHub" aria-label="View ${project.name} code on GitHub">${githubIcon()}${arrowIcon()}</a>
+                <a class="button" href="${project.code}" target="_blank" rel="noreferrer" title="View code on GitHub" aria-label="View ${project.name} code on GitHub">See in ${githubIcon()}${arrowIcon()}</a>
               </div>
+              ${project.downloadNote ? `<p class="download-note">${project.downloadNote}</p>` : ""}
             </section>
             <section class="preview">
               ${previewMarkup(project)}
@@ -595,18 +629,18 @@
     document.querySelectorAll(".screenshot-carousel").forEach((carousel) => {
       const track = carousel.querySelector(".shot-track");
       const dots = Array.from(carousel.querySelectorAll(".dot"));
+      let activeSlide = 0;
       const updateDots = () => {
-        const active = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
-        dots.forEach((dot, index) => dot.classList.toggle("is-active", index === active));
+        dots.forEach((dot, index) => dot.classList.toggle("is-active", index === activeSlide));
       };
 
       dots.forEach((dot, index) => {
         dot.addEventListener("click", () => {
+          activeSlide = index;
           track.scrollTo({ left: index * track.clientWidth, behavior: "smooth" });
+          updateDots();
         });
       });
-
-      track.addEventListener("scroll", updateDots, { passive: true });
       updateDots();
     });
   </script>
