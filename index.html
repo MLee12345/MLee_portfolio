@@ -51,6 +51,7 @@
       border-bottom: 1px solid var(--line);
       display: grid;
       gap: 20px;
+      position: relative;
     }
 
     .eyebrow {
@@ -77,6 +78,9 @@
     }
 
     .site-corner {
+      position: absolute;
+      top: 34px;
+      right: 0;
       border: 1px solid var(--line);
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.66);
@@ -85,34 +89,6 @@
       font-size: 0.8rem;
       font-weight: 850;
       white-space: nowrap;
-    }
-
-    .hero-meta {
-      display: flex;
-      align-items: center;
-      justify-content: flex-start;
-      flex-wrap: wrap;
-      gap: 10px 14px;
-    }
-
-    .project-marks {
-      display: flex;
-      gap: 7px;
-      align-items: center;
-    }
-
-    .project-mark {
-      width: 36px;
-      height: 7px;
-      border-radius: 999px;
-      background: var(--mark);
-      box-shadow: inset 0 0 0 1px rgba(31, 33, 29, 0.08);
-    }
-
-    .hero-note {
-      color: var(--muted);
-      font-size: 0.84rem;
-      font-weight: 850;
     }
 
     .back-top {
@@ -621,6 +597,11 @@
         padding-top: 28px;
       }
 
+      .site-corner {
+        position: static;
+        width: fit-content;
+      }
+
       .screenshot-carousel {
         height: 245px;
       }
@@ -657,17 +638,7 @@
         <p class="eyebrow">MLee Portfolio</p>
         <h1><span class="headline-line">Projects that solve</span><br><span class="headline-line">real problems.</span></h1>
       </div>
-      <div class="hero-meta" aria-label="Portfolio overview">
-        <div class="site-corner">5 projects • live previews</div>
-        <div class="project-marks" aria-hidden="true">
-          <span class="project-mark" style="--mark:#4f46e5"></span>
-          <span class="project-mark" style="--mark:#10b981"></span>
-          <span class="project-mark" style="--mark:#1a73e8"></span>
-          <span class="project-mark" style="--mark:#6366f1"></span>
-          <span class="project-mark" style="--mark:#0284c7"></span>
-        </div>
-        <span class="hero-note">Preview apps here, then jump to code.</span>
-      </div>
+      <div class="site-corner">5 projects • live previews</div>
     </header>
 
     <nav class="nav" id="nav" aria-label="Project navigation"></nav>
@@ -717,8 +688,7 @@
         screenshots: [
           { src: "assets/screenshots/finish-fast-budget.png", alt: "FinishFast bedtime budget and homework queue" },
           { src: "assets/screenshots/finish-fast-overrun-options.png", alt: "FinishFast overrun resolution options" },
-          { src: "assets/screenshots/finish-fast-focus.png", alt: "FinishFast focus timer screen" },
-          { src: "assets/screenshots/finish-fast-checkin.png", alt: "FinishFast focus check-in prompt" }
+          { src: "assets/screenshots/finish-fast-focus.png", alt: "FinishFast focus timer screen" }
         ],
         problem: "Students can underestimate how much time is left once homework, fixed commitments, deadlines, and bedtime collide.",
         solution: "FinishFast turns the evening into a live time budget with task duration, fixed commitments, buffer time, overrun warnings, and a focus timer.",
@@ -738,8 +708,7 @@
           { src: "assets/screenshots/dopamine-live-discover.png", alt: "DopamineLive concert discovery marketplace" },
           { src: "assets/screenshots/dopamine-live-seats.png", alt: "DopamineLive seat selection flow" },
           { src: "assets/screenshots/dopamine-live-checkout.png", alt: "DopamineLive checkout screen" },
-          { src: "assets/screenshots/dopamine-live-profile.png", alt: "DopamineLive profile history screen" },
-          { src: "assets/screenshots/dopamine-live-wallet.png", alt: "DopamineLive ticket wallet screen" }
+          { src: "assets/screenshots/dopamine-live-profile.png", alt: "DopamineLive profile history screen" }
         ],
         problem: "Ticketing sites make discovery, seats, scarcity, checkout, and merch feel intense, but prototypes rarely let people safely explore that full loop.",
         solution: "DopamineLive simulates a live-event marketplace where users browse shows, pick seats, claim virtual tickets, enter a stage, and buy virtual merch.",
@@ -760,7 +729,6 @@
         downloadNote: "ZIP for manual Chrome extension loading; not an installer.",
         screenshots: [
           { src: "assets/screenshots/gsifter-sidebar-suggestions.png", alt: "gSifter sidebar suggestions tab" },
-          { src: "assets/screenshots/gsifter-sidebar-added.png", alt: "gSifter sidebar suggestion after adding to calendar" },
           { src: "assets/screenshots/gsifter-sidebar-chat.png", alt: "gSifter sidebar chat tab" },
           { src: "assets/screenshots/gsifter-sidebar-rule.png", alt: "gSifter sidebar rule saved from chat" },
           { src: "assets/screenshots/gsifter-sidebar-settings.png", alt: "gSifter sidebar settings tab" }
@@ -879,7 +847,7 @@
                 </div>
               </div>
               <div class="actions">
-                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<button class="button primary" type="button" data-preview="${project.live}" data-preview-title="${project.name}">Open here ${windowIcon()}</button>`}
+                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<button class="button primary" type="button" data-preview="${project.live}" data-preview-title="${project.name}">Preview ${arrowIcon()}</button>`}
                 <a class="button" href="${project.code}" target="_blank" rel="noreferrer" title="View code on GitHub" aria-label="View ${project.name} code on GitHub">See in ${githubIcon()}${arrowIcon()}</a>
               </div>
               ${project.downloadNote ? `<p class="download-note">${project.downloadNote}</p>` : ""}
