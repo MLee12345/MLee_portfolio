@@ -636,7 +636,7 @@
     <header id="top">
       <div>
         <p class="eyebrow">MLee Portfolio</p>
-        <h1><span class="headline-line">Projects that solve</span><br><span class="headline-line">real problems.</span></h1>
+        <h1><span class="headline-line">Projects that solve</span><br><span class="headline-line">real problems</span><br><span class="headline-line">with thoughtful tools.</span></h1>
       </div>
       <div class="site-corner">5 projects • live previews</div>
     </header>
@@ -822,7 +822,7 @@
       mount.innerHTML = projects.map((project, index) => `
         <article class="project" id="${project.id}" style="--accent:${project.accent}">
           <div class="project-toolbar">
-            <button class="mini-link" type="button" data-preview="${project.live}" data-preview-title="${project.name}">${project.previewText || "Preview here"} ${windowIcon()}</button>
+            <button class="mini-link" type="button" data-preview="${project.live}" data-preview-title="${project.name}">${project.previewText || "Take a peek"} ${windowIcon()}</button>
           </div>
           <div class="project-grid">
             <section class="project-copy">
@@ -847,7 +847,7 @@
                 </div>
               </div>
               <div class="actions">
-                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<button class="button primary" type="button" data-preview="${project.live}" data-preview-title="${project.name}">Preview ${arrowIcon()}</button>`}
+                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<a class="button primary" href="${project.live}" target="_blank" rel="noreferrer">Preview ${arrowIcon()}</a>`}
                 <a class="button" href="${project.code}" target="_blank" rel="noreferrer" title="View code on GitHub" aria-label="View ${project.name} code on GitHub">See in ${githubIcon()}${arrowIcon()}</a>
               </div>
               ${project.downloadNote ? `<p class="download-note">${project.downloadNote}</p>` : ""}
