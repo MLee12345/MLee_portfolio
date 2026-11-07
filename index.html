@@ -47,11 +47,7 @@
     }
 
     header {
-      padding: 42px 0 28px;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      gap: 24px;
-      align-items: end;
+      padding: 38px 0 24px;
       border-bottom: 1px solid var(--line);
     }
 
@@ -66,37 +62,33 @@
 
     h1 {
       margin: 0;
-      max-width: 780px;
-      font-size: clamp(3.2rem, 8vw, 7.8rem);
-      line-height: 0.9;
+      max-width: 640px;
+      font-size: clamp(2.35rem, 5vw, 4.4rem);
+      line-height: 0.94;
       letter-spacing: 0;
       font-family: Georgia, "Times New Roman", serif;
       font-weight: 700;
     }
 
-    .intro {
-      max-width: 370px;
-      color: var(--muted);
-      font-size: 1rem;
-      margin: 0;
-    }
-
     .nav {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       padding: 18px 0 34px;
     }
 
     .nav a {
       text-decoration: none;
-      padding: 8px 11px;
+      padding: 10px 14px;
       border: 1px solid var(--line);
-      border-radius: 999px;
+      border-radius: 18px;
       background: rgba(255, 255, 255, 0.55);
       color: var(--muted);
       font-size: 0.88rem;
       font-weight: 700;
+      display: grid;
+      gap: 1px;
+      min-width: 150px;
     }
 
     .nav a:hover,
@@ -104,6 +96,21 @@
       background: var(--ink);
       color: #fff;
       outline: none;
+    }
+
+    .nav strong {
+      color: var(--ink);
+      font-size: 1rem;
+    }
+
+    .nav a:hover strong,
+    .nav a:focus-visible strong {
+      color: #fff;
+    }
+
+    .nav small {
+      font-size: 0.72rem;
+      font-weight: 750;
     }
 
     .project {
@@ -135,17 +142,6 @@
     .project-top {
       display: grid;
       gap: 18px;
-    }
-
-    .project-number {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: var(--accent);
-      color: white;
-      display: grid;
-      place-items: center;
-      font-weight: 900;
     }
 
     h2 {
@@ -230,6 +226,11 @@
       color: var(--ink);
     }
 
+    .button.icon-only {
+      width: 44px;
+      padding: 0;
+    }
+
     .button.primary {
       background: var(--accent);
       color: white;
@@ -252,77 +253,80 @@
       align-content: center;
     }
 
-    .browser-frame {
-      height: 320px;
+    .screenshot-carousel {
+      height: 360px;
       border: 1px solid #bcb5a8;
       border-radius: 8px;
       overflow: hidden;
       background: #fff;
       box-shadow: 0 14px 34px rgba(35, 32, 26, 0.18);
-    }
-
-    .browser-bar {
-      height: 30px;
-      background: #eee9df;
-      border-bottom: 1px solid #cfc7b8;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      padding: 0 10px;
+      display: grid;
+      grid-template-rows: 1fr auto;
     }
 
     .dot {
-      width: 9px;
-      height: 9px;
+      width: 8px;
+      height: 8px;
       border-radius: 50%;
       background: var(--accent);
-      opacity: 0.9;
-    }
-
-    .frame-body {
-      height: calc(100% - 30px);
-      background: #fff;
-      overflow: hidden;
-      position: relative;
-    }
-
-    .frame-body iframe {
-      width: 1440px;
-      height: 900px;
+      opacity: 0.35;
       border: 0;
-      transform: scale(0.245);
-      transform-origin: top left;
-      pointer-events: none;
+      padding: 0;
+      cursor: pointer;
     }
 
-    .extension-preview {
-      height: 100%;
-      padding: 18px;
-      background:
-        linear-gradient(90deg, #f8fafd 0 60%, #ffffff 60% 100%);
-      display: grid;
-      grid-template-columns: 1fr 210px;
-      gap: 16px;
+    .dot.is-active {
+      opacity: 1;
+      transform: scale(1.25);
     }
 
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      align-content: start;
+    .shot-track {
+      display: flex;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
     }
 
-    .event-block {
-      min-height: 44px;
-      border-left: 5px solid #1a73e8;
-      background: #e8f0fe;
-      border-radius: 6px;
+    .shot-track::-webkit-scrollbar {
+      display: none;
     }
 
-    .sidebar-mock {
-      border: 1px solid #dadce0;
-      border-radius: 8px;
+    .shot {
+      flex: 0 0 100%;
+      min-width: 100%;
+      scroll-snap-align: start;
       background: #fff;
+    }
+
+    .shot img {
+      display: block;
+      width: 100%;
+      height: 315px;
+      object-fit: cover;
+      object-position: top left;
+    }
+
+    .shot-dots {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      background: #f7f3eb;
+      border-top: 1px solid #d7d0c0;
+    }
+
+    .github-icon {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
+
+    .arrow-icon {
+      width: 14px;
+      height: 14px;
+      display: block;
+    }
       overflow: hidden;
       box-shadow: -8px 0 22px rgba(26, 115, 232, 0.12);
     }
@@ -380,7 +384,7 @@
       }
 
       .preview,
-      .browser-frame {
+      .screenshot-carousel {
         min-height: 0;
       }
 
@@ -398,20 +402,12 @@
         padding-top: 28px;
       }
 
-      .browser-frame {
+      .screenshot-carousel {
         height: 245px;
       }
 
-      .frame-body iframe {
-        transform: scale(0.18);
-      }
-
-      .extension-preview {
-        grid-template-columns: 1fr;
-      }
-
-      .sidebar-mock {
-        display: none;
+      .shot img {
+        height: 201px;
       }
     }
   </style>
@@ -421,9 +417,8 @@
     <header>
       <div>
         <p class="eyebrow">MLee Portfolio</p>
-        <h1>Useful apps, clearly shown.</h1>
+        <h1>Projects that solve real problems.</h1>
       </div>
-      <p class="intro">A readable portfolio of five projects, with real previews, plain-language descriptions, standout features, and links that stay relative to wherever this site is hosted.</p>
     </header>
 
     <nav class="nav" id="nav" aria-label="Project navigation"></nav>
@@ -439,8 +434,13 @@
         repo: "finish_fast",
         type: "Workload and focus planner",
         accent: "#4f46e5",
-        preview: "../finish_fast/index.html",
+        label: "Homework time planner",
+        live: "https://finish-fast.vercel.app/",
         code: "https://github.com/MLee12345/finish_fast",
+        screenshots: [
+          { src: "assets/screenshots/finish-fast-budget.png", alt: "FinishFast bedtime budget and homework queue" },
+          { src: "assets/screenshots/finish-fast-focus.png", alt: "FinishFast focus timer screen" }
+        ],
         problem: "Students can underestimate how much time is left once homework, fixed commitments, deadlines, and bedtime collide.",
         solution: "FinishFast turns the evening into a live time budget with task duration, fixed commitments, buffer time, overrun warnings, and a focus timer.",
         proud: "The bedtime budget is the strong dynamic: it makes an invisible time crunch visible before it becomes a late-night surprise.",
@@ -452,8 +452,13 @@
         repo: "dopamine_live",
         type: "Virtual ticketing and merch simulator",
         accent: "#10b981",
-        preview: "../dopamine_live/index.html",
+        label: "Virtual concert tickets",
+        live: "https://dopamine-live.vercel.app/",
         code: "https://github.com/MLee12345/dopamine_live",
+        screenshots: [
+          { src: "assets/screenshots/dopamine-live-discover.png", alt: "DopamineLive concert discovery marketplace" },
+          { src: "assets/screenshots/dopamine-live-seats.png", alt: "DopamineLive seat selection flow" }
+        ],
         problem: "Ticketing sites make discovery, seats, scarcity, checkout, and merch feel intense, but prototypes rarely let people safely explore that full loop.",
         solution: "DopamineLive simulates a live-event marketplace where users browse shows, pick seats, claim virtual tickets, enter a stage, and buy virtual merch.",
         proud: "The experience has a complete arc: marketplace discovery, ticket wallet, stage mode, merch queue, and local-only checkout simulation.",
@@ -465,9 +470,13 @@
         repo: "gSifter",
         type: "Google Calendar assistant extension",
         accent: "#1a73e8",
-        preview: null,
+        label: "Calendar email assistant",
         code: "https://github.com/MLee12345/gSifter",
         download: "assets/gSifter-extension.zip",
+        screenshots: [
+          { src: "assets/screenshots/gsifter-suggestions.png", alt: "gSifter detected events panel" },
+          { src: "assets/screenshots/gsifter-chat.png", alt: "gSifter chat rule panel" }
+        ],
         problem: "Useful events can get buried in emails and calendar clutter, and manually turning them into clean calendar entries takes attention.",
         solution: "gSifter adds a sidebar to Google Calendar for detected event suggestions, chat-based filtering rules, connected accounts, and privacy settings.",
         proud: "It lives directly inside the scheduling context, with suggestions, rule tuning, account setup, API-key activation, and calendar targeting in one panel.",
@@ -479,8 +488,13 @@
         repo: "face_recall",
         type: "Memory game",
         accent: "#6366f1",
-        preview: "../face_recall/index.html",
+        label: "Name memory game",
+        live: "https://face-recall.vercel.app/",
         code: "https://github.com/MLee12345/face_recall",
+        screenshots: [
+          { src: "assets/screenshots/face-recall-game.png", alt: "Face Recall quiz mode" },
+          { src: "assets/screenshots/face-recall-match.png", alt: "Face Recall matching mode" }
+        ],
         problem: "Face recognition is a useful social skill, but practice tools can feel clinical instead of inviting.",
         solution: "Face Recall frames recognition as a card-based memory game with account states, profile flow, theme settings, and game navigation.",
         proud: "The app keeps the practice lightweight and approachable while still feeling like a complete little product.",
@@ -492,8 +506,13 @@
         repo: "route_us",
         type: "Carpool coordination tool",
         accent: "#0284c7",
-        preview: "../route_us/index.html",
+        label: "Carpool schedule tool",
+        live: "https://route-us.vercel.app/",
         code: "https://github.com/MLee12345/route_us",
+        screenshots: [
+          { src: "assets/screenshots/route-us-dashboard.png", alt: "RouteUs dashboard with carpool group" },
+          { src: "assets/screenshots/route-us-group.png", alt: "RouteUs group schedule calendar" }
+        ],
         problem: "Carpool groups need to coordinate kids, seats, availability, route details, and updates without spreading the plan across texts.",
         solution: "RouteUs gives families shared groups with join codes, profiles, availability editing, driver/rider views, week schedules, and group chat.",
         proud: "The group page combines the practical pieces in one place: schedule, members, rider details, destination notes, and chat.",
@@ -501,43 +520,26 @@
       }
     ];
 
-    function projectUrl(project) {
-      return `../${project.repo}/`;
+    function arrowIcon() {
+      return `<svg class="arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg>`;
     }
 
-    function arrowIcon() {
-      return `<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg>`;
+    function githubIcon() {
+      return `<svg class="github-icon" aria-hidden="true" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12c0 5.08 3.29 9.38 7.86 10.9.58.1.79-.25.79-.56v-2.02c-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.05-.72.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.23-1.27-5.23-5.67 0-1.25.45-2.28 1.18-3.08-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.16 1.18.92-.26 1.9-.38 2.87-.39.98 0 1.96.13 2.88.39 2.19-1.49 3.15-1.18 3.15-1.18.63 1.58.24 2.75.12 3.04.74.8 1.18 1.83 1.18 3.08 0 4.41-2.69 5.38-5.25 5.66.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5Z"/></svg>`;
     }
 
     function previewMarkup(project) {
-      if (!project.preview) {
-        return `
-          <div class="browser-frame" aria-label="gSifter interface preview">
-            <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-            <div class="frame-body">
-              <div class="extension-preview">
-                <div class="calendar-grid">
-                  ${Array.from({ length: 12 }, () => `<div class="event-block"></div>`).join("")}
-                </div>
-                <div class="sidebar-mock">
-                  <div class="tabs"><span>Suggestions</span><span>Chat</span><span>Settings</span></div>
-                  <div class="suggestions">
-                    <div class="suggestion"></div>
-                    <div class="suggestion"></div>
-                    <div class="suggestion"></div>
-                    <div class="suggestion"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>`;
-      }
-
       return `
-        <div class="browser-frame" aria-label="${project.name} live preview">
-          <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-          <div class="frame-body">
-            <iframe src="${project.preview}" title="${project.name} preview" loading="lazy" tabindex="-1"></iframe>
+        <div class="screenshot-carousel" data-carousel="${project.id}" aria-label="${project.name} screenshots">
+          <div class="shot-track">
+            ${project.screenshots.map((shot, imageIndex) => `
+              <figure class="shot" id="${project.id}-shot-${imageIndex}">
+                <img src="${shot.src}" alt="${shot.alt}" loading="lazy">
+              </figure>
+            `).join("")}
+          </div>
+          <div class="shot-dots" aria-label="${project.name} screenshot pages">
+            ${project.screenshots.map((_, imageIndex) => `<button class="dot ${imageIndex === 0 ? "is-active" : ""}" type="button" data-slide="${imageIndex}" aria-label="Show screenshot ${imageIndex + 1}"></button>`).join("")}
           </div>
         </div>`;
     }
@@ -546,14 +548,13 @@
       const nav = document.getElementById("nav");
       const mount = document.getElementById("projects");
 
-      nav.innerHTML = projects.map(project => `<a href="#${project.id}">${project.name}</a>`).join("");
+      nav.innerHTML = projects.map(project => `<a href="#${project.id}"><strong>${project.name}</strong><small>${project.label}</small></a>`).join("");
 
       mount.innerHTML = projects.map((project, index) => `
         <article class="project" id="${project.id}" style="--accent:${project.accent}">
           <div class="project-grid">
             <section class="project-copy">
               <div class="project-top">
-                <span class="project-number">${index + 1}</span>
                 <div>
                   <p class="type">${project.type}</p>
                   <h2>${project.name}</h2>
@@ -577,16 +578,12 @@
                 </ul>
               </div>
               <div class="actions">
-                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<a class="button primary" href="${projectUrl(project)}" target="_blank" rel="noreferrer">Open project ${arrowIcon()}</a>`}
-                <a class="button" href="${project.code}" target="_blank" rel="noreferrer">View code ${arrowIcon()}</a>
+                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<a class="button primary" href="${project.live}" target="_blank" rel="noreferrer">Open project ${arrowIcon()}</a>`}
+                <a class="button icon-only" href="${project.code}" target="_blank" rel="noreferrer" title="View code on GitHub" aria-label="View ${project.name} code on GitHub">${githubIcon()}${arrowIcon()}</a>
               </div>
             </section>
             <section class="preview">
               ${previewMarkup(project)}
-              <div class="preview-caption">
-                <span><strong>Thumbnail:</strong> embedded project preview</span>
-                <span>${project.download ? "Extension download included" : "Relative project link"}</span>
-              </div>
             </section>
           </div>
         </article>
@@ -594,6 +591,24 @@
     }
 
     render();
+
+    document.querySelectorAll(".screenshot-carousel").forEach((carousel) => {
+      const track = carousel.querySelector(".shot-track");
+      const dots = Array.from(carousel.querySelectorAll(".dot"));
+      const updateDots = () => {
+        const active = Math.round(track.scrollLeft / Math.max(1, track.clientWidth));
+        dots.forEach((dot, index) => dot.classList.toggle("is-active", index === active));
+      };
+
+      dots.forEach((dot, index) => {
+        dot.addEventListener("click", () => {
+          track.scrollTo({ left: index * track.clientWidth, behavior: "smooth" });
+        });
+      });
+
+      track.addEventListener("scroll", updateDots, { passive: true });
+      updateDots();
+    });
   </script>
 </body>
 </html>
