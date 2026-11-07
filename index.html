@@ -47,10 +47,10 @@
     }
 
     header {
-      padding: 34px 0 28px;
+      padding: 42px 0 34px;
       border-bottom: 1px solid var(--line);
       display: grid;
-      gap: 20px;
+      gap: 26px;
       position: relative;
     }
 
@@ -79,7 +79,7 @@
 
     .site-corner {
       position: absolute;
-      top: 34px;
+      top: 42px;
       right: 0;
       border: 1px solid var(--line);
       border-radius: 999px;
@@ -636,7 +636,7 @@
     <header id="top">
       <div>
         <p class="eyebrow">MLee Portfolio</p>
-        <h1><span class="headline-line">Projects that solve</span><br><span class="headline-line">real problems</span><br><span class="headline-line">with thoughtful tools.</span></h1>
+        <h1><span class="headline-line">Projects that solve</span><br><span class="headline-line">real problems and</span><br><span class="headline-line">make life better.</span></h1>
       </div>
       <div class="site-corner">5 projects • live previews</div>
     </header>
@@ -861,6 +861,23 @@
     }
 
     render();
+
+    document.querySelectorAll(".nav a").forEach((link) => {
+      link.addEventListener("click", (event) => {
+        const target = document.querySelector(link.getAttribute("href"));
+        if (!target) return;
+        event.preventDefault();
+
+        const cardTop = target.getBoundingClientRect().top + window.scrollY;
+        const peekOffset = window.innerWidth < 700 ? 68 : 92;
+        window.scrollTo({
+          top: Math.max(0, cardTop - peekOffset),
+          behavior: "smooth"
+        });
+
+        history.replaceState(null, "", link.getAttribute("href"));
+      });
+    });
 
     const previewModal = document.getElementById("previewModal");
     const previewFrame = document.getElementById("previewFrame");

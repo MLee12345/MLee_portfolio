@@ -28,6 +28,11 @@
       display: grid;
       grid-template-columns: 1fr 390px;
       overflow: hidden;
+      transition: grid-template-columns 220ms ease;
+    }
+
+    body.sidebar-closed {
+      grid-template-columns: 1fr 0;
     }
 
     .calendar {
@@ -169,6 +174,40 @@
       border-left: 1px solid var(--line);
       box-shadow: -12px 0 36px rgba(60, 64, 67, 0.12);
       background: #f8f9fa;
+      transition: opacity 180ms ease, transform 220ms ease;
+    }
+
+    body.sidebar-closed .sidebar-frame {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(18px);
+    }
+
+    .gsifter-trigger {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 5;
+      width: 52px;
+      height: 52px;
+      border: 1px solid rgba(26, 115, 232, 0.32);
+      border-radius: 50%;
+      background: #1a73e8;
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      font-size: 1rem;
+      letter-spacing: -0.03em;
+      box-shadow: 0 10px 28px rgba(26, 115, 232, 0.28);
+      cursor: pointer;
+    }
+
+    .gsifter-trigger:hover,
+    .gsifter-trigger:focus-visible {
+      outline: 4px solid rgba(26, 115, 232, 0.18);
+      outline-offset: 3px;
+      background: #1557b0;
     }
 
     @media (max-width: 900px) {
@@ -180,6 +219,10 @@
       .sidebar-frame {
         min-height: 680px;
         height: 72vh;
+      }
+
+      body.sidebar-closed {
+        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -207,9 +250,12 @@
   </section>
 
   <iframe class="sidebar-frame" id="gsifterSidebar" src="gsifter-real/sidebar.html" title="gSifter sidebar preview"></iframe>
+  <button class="gsifter-trigger" id="gsifterTrigger" type="button" aria-label="Close gSifter sidebar" aria-expanded="true">gS</button>
 
   <script>
     const grid = document.getElementById("calendarGrid");
+    const gsifterTrigger = document.getElementById("gsifterTrigger");
+    const gsifterSidebar = document.getElementById("gsifterSidebar");
     const hours = ["8 AM", "9 AM", "10 AM", "11 AM", "12 PM", "1 PM", "2 PM", "3 PM", "4 PM"];
     const placement = {
       "Study group with Nora": [8, 2, ""],
@@ -249,12 +295,21 @@
     addEvent("Soccer practice", 7, 3, "yellow");
     addEvent("Family dinner", 8, 4);
 
+    function setSidebarOpen(isOpen) {
+      document.body.classList.toggle("sidebar-closed", !isOpen);
+      gsifterTrigger.setAttribute("aria-expanded", String(isOpen));
+      gsifterTrigger.setAttribute("aria-label", `${isOpen ? "Close" : "Open"} gSifter sidebar`);
+    }
+
+    gsifterTrigger.addEventListener("click", () => {
+      setSidebarOpen(document.body.classList.contains("sidebar-closed"));
+    });
+
     window.addEventListener("message", (event) => {
       const data = event.data || {};
-      const iframe = document.getElementById("gsifterSidebar");
 
       if (data.action === "GET_MY_CALENDARS") {
-        iframe.contentWindow.postMessage({
+        gsifterSidebar.contentWindow.postMessage({
           action: "MY_CALENDARS_RESPONSE",
           calendars: [
             { id: "school", name: "School Calendar" },
@@ -267,10 +322,14 @@
         const title = data.eventData?.title || "New event";
         const spot = placement[title] || [5, 3, ""];
         addEvent(title, spot[0], spot[1], spot[2]);
-        iframe.contentWindow.postMessage({
+        gsifterSidebar.contentWindow.postMessage({
           action: "EVENT_ADDED_SUCCESS",
           eventId: data.eventData?.id
         }, "*");
+      }
+
+      if (data.action === "CLOSE_GSIFTER_SIDEBAR") {
+        setSidebarOpen(false);
       }
     });
   </script>
