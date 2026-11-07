@@ -3,20 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Made by Maya | App Portfolio</title>
+  <title>MLee Portfolio</title>
   <style>
     :root {
-      --ink: #171512;
-      --paper: #fbf7ef;
-      --paper-soft: #f2ecdf;
-      --line: #28231c;
-      --muted: #6b6256;
-      --ember: #e9572f;
-      --leaf: #4b8b6b;
-      --blue: #3f6f93;
-      --gold: #d6a03d;
-      --plum: #7b5c83;
-      --shadow: 0 22px 70px rgba(31, 26, 19, 0.15);
+      --bg: #f6f4ee;
+      --surface: #ffffff;
+      --surface-soft: #ebe7dc;
+      --ink: #1f211d;
+      --muted: #676d61;
+      --line: #d8d2c4;
+      --shadow: 0 18px 44px rgba(44, 42, 34, 0.12);
+      --green: #477463;
+      --red: #c8583d;
+      --blue: #3d6d8f;
+      --violet: #6d6194;
+      --gold: #a9732b;
+      --radius: 8px;
     }
 
     * {
@@ -29,14 +31,9 @@
 
     body {
       margin: 0;
+      background: var(--bg);
       color: var(--ink);
-      background:
-        linear-gradient(90deg, rgba(23, 21, 18, 0.045) 1px, transparent 1px) 0 0 / 36px 36px,
-        linear-gradient(rgba(23, 21, 18, 0.035) 1px, transparent 1px) 0 0 / 36px 36px,
-        radial-gradient(circle at 18% 18%, rgba(214, 160, 61, 0.24), transparent 28rem),
-        radial-gradient(circle at 84% 12%, rgba(75, 139, 107, 0.18), transparent 30rem),
-        var(--paper);
-      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       line-height: 1.5;
     }
 
@@ -44,484 +41,230 @@
       color: inherit;
     }
 
-    button,
-    input {
-      font: inherit;
+    .page {
+      width: min(1180px, calc(100% - 36px));
+      margin: 0 auto;
     }
 
-    .shell {
-      min-height: 100vh;
+    header {
+      padding: 42px 0 28px;
       display: grid;
-      grid-template-columns: minmax(230px, 24vw) minmax(0, 1fr);
-    }
-
-    .rail {
-      position: sticky;
-      top: 0;
-      height: 100vh;
-      padding: 28px 24px;
-      border-right: 2px solid var(--line);
-      background: rgba(251, 247, 239, 0.78);
-      backdrop-filter: blur(18px);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      z-index: 3;
-    }
-
-    .mark {
-      width: 68px;
-      height: 68px;
-      border: 2px solid var(--line);
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: conic-gradient(from 220deg, var(--ember), var(--gold), var(--leaf), var(--blue), var(--ember));
-      box-shadow: 7px 7px 0 var(--line);
-      color: var(--paper);
-      font-size: 28px;
-      font-weight: 900;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: end;
+      border-bottom: 1px solid var(--line);
     }
 
     .eyebrow {
-      margin: 28px 0 10px;
+      margin: 0 0 10px;
+      color: var(--muted);
       text-transform: uppercase;
       letter-spacing: 0.14em;
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--muted);
-    }
-
-    .rail h1 {
-      margin: 0;
-      max-width: 11ch;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(46px, 7vw, 92px);
-      line-height: 0.88;
-      letter-spacing: 0;
-    }
-
-    .rail p {
-      color: var(--muted);
-      margin: 18px 0 0;
-      max-width: 28ch;
-      font-size: 15px;
-    }
-
-    .nav-list {
-      display: grid;
-      gap: 8px;
-      margin-top: 32px;
-    }
-
-    .nav-list a {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      min-height: 38px;
-      border: 1px solid rgba(40, 35, 28, 0.24);
-      border-radius: 999px;
-      padding: 7px 11px 7px 15px;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.42);
-      color: var(--muted);
-      font-size: 13px;
+      font-size: 0.75rem;
       font-weight: 800;
-      transition: transform 160ms ease, color 160ms ease, background 160ms ease;
     }
 
-    .nav-list a:hover,
-    .nav-list a:focus-visible {
-      transform: translateX(4px);
-      background: var(--ink);
-      color: var(--paper);
-      outline: none;
-    }
-
-    .nav-list span {
-      width: 22px;
-      height: 22px;
-      display: grid;
-      place-items: center;
-      border-radius: 50%;
-      background: currentColor;
-      color: var(--paper);
-      font-size: 11px;
-    }
-
-    .rail-foot {
-      display: grid;
-      gap: 12px;
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .link-note {
-      border: 1px solid rgba(40, 35, 28, 0.28);
-      border-radius: 8px;
-      padding: 12px;
-      background: rgba(255, 255, 255, 0.38);
-    }
-
-    main {
-      padding: 30px;
-    }
-
-    .hero {
-      min-height: 74vh;
-      border: 2px solid var(--line);
-      border-radius: 8px;
-      box-shadow: var(--shadow);
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.22)),
-        repeating-linear-gradient(-8deg, transparent 0 20px, rgba(23, 21, 18, 0.035) 20px 22px);
-      display: grid;
-      grid-template-columns: minmax(0, 1.05fr) minmax(300px, 0.95fr);
-      gap: 24px;
-      padding: clamp(24px, 5vw, 64px);
-      align-items: end;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero:before {
-      content: "";
-      position: absolute;
-      inset: 18px;
-      border: 1px solid rgba(40, 35, 28, 0.22);
-      border-radius: 4px;
-      pointer-events: none;
-    }
-
-    .hero-copy {
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero-copy h2 {
-      max-width: 11ch;
+    h1 {
       margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(64px, 10vw, 154px);
-      line-height: 0.86;
-      letter-spacing: 0;
-    }
-
-    .hero-copy p {
-      margin: 24px 0 0;
-      max-width: 54ch;
-      color: var(--muted);
-      font-size: clamp(17px, 2vw, 21px);
-    }
-
-    .atlas {
-      position: relative;
-      z-index: 1;
-      min-height: 460px;
-      display: grid;
-      place-items: center;
-    }
-
-    .orbit {
-      width: min(100%, 520px);
-      aspect-ratio: 1;
-      border: 2px solid var(--line);
-      border-radius: 50%;
-      position: relative;
-      background:
-        radial-gradient(circle at center, rgba(23, 21, 18, 0.04) 0 18%, transparent 18%),
-        repeating-radial-gradient(circle, transparent 0 54px, rgba(40, 35, 28, 0.2) 55px 56px);
-    }
-
-    .node {
-      --angle: 0deg;
-      --color: var(--ember);
-      position: absolute;
-      left: 50%;
-      top: 50%;
-      width: 122px;
-      height: 122px;
-      border: 2px solid var(--line);
-      border-radius: 8px;
-      background: var(--paper);
-      transform:
-        translate(-50%, -50%)
-        rotate(var(--angle))
-        translate(0, -196px)
-        rotate(calc(var(--angle) * -1));
-      display: grid;
-      place-items: center;
-      box-shadow: 6px 6px 0 var(--line);
-      text-decoration: none;
-      color: var(--ink);
-      font-weight: 900;
-      text-align: center;
-      padding: 12px;
-      transition: transform 180ms ease;
-    }
-
-    .node:hover,
-    .node:focus-visible {
-      transform:
-        translate(-50%, -50%)
-        rotate(var(--angle))
-        translate(0, -204px)
-        rotate(calc(var(--angle) * -1));
-      outline: none;
-    }
-
-    .node:before {
-      content: "";
-      position: absolute;
-      top: 9px;
-      left: 9px;
-      right: 9px;
-      height: 10px;
-      border-radius: 999px;
-      background: var(--color);
-    }
-
-    .node small {
-      display: block;
-      color: var(--muted);
-      font-size: 11px;
-      margin-top: 4px;
-    }
-
-    .center-seal {
-      position: absolute;
-      inset: 50%;
-      width: 172px;
-      height: 172px;
-      transform: translate(-50%, -50%);
-      display: grid;
-      place-items: center;
-      border: 2px solid var(--line);
-      border-radius: 50%;
-      background: var(--ink);
-      color: var(--paper);
-      text-align: center;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: 24px;
-      line-height: 1.05;
-      box-shadow: 8px 8px 0 rgba(40, 35, 28, 0.2);
-    }
-
-    .section-intro {
-      margin: 80px 0 22px;
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(260px, 420px);
-      gap: 28px;
-      align-items: end;
-    }
-
-    .section-intro h2 {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(42px, 7vw, 96px);
-      line-height: 0.93;
-      letter-spacing: 0;
-    }
-
-    .section-intro p {
-      color: var(--muted);
-      margin: 0;
-      font-size: 16px;
-    }
-
-    .project {
-      --accent: var(--ember);
-      border-top: 2px solid var(--line);
-      padding: 28px 0;
-      display: grid;
-      grid-template-columns: minmax(320px, 0.88fr) minmax(0, 1.12fr);
-      gap: clamp(22px, 4vw, 48px);
-      align-items: stretch;
-    }
-
-    .project:last-child {
-      border-bottom: 2px solid var(--line);
-    }
-
-    .project-meta {
-      min-height: 520px;
-      border: 2px solid var(--line);
-      border-radius: 8px;
-      background: rgba(255, 255, 255, 0.5);
-      box-shadow: 8px 8px 0 rgba(40, 35, 28, 0.16);
-      padding: 22px;
-      display: grid;
-      grid-template-rows: auto auto 1fr auto;
-      gap: 20px;
-      position: sticky;
-      top: 28px;
-    }
-
-    .project-kicker {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 12px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      font-weight: 900;
-    }
-
-    .project-number {
-      width: 34px;
-      height: 34px;
-      display: grid;
-      place-items: center;
-      border: 2px solid var(--line);
-      border-radius: 50%;
-      background: var(--accent);
-      color: #fff;
-      letter-spacing: 0;
-    }
-
-    .project h3 {
-      margin: 0;
-      font-family: Georgia, "Times New Roman", serif;
-      font-size: clamp(46px, 6vw, 90px);
+      max-width: 780px;
+      font-size: clamp(3.2rem, 8vw, 7.8rem);
       line-height: 0.9;
       letter-spacing: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 700;
     }
 
-    .tags {
+    .intro {
+      max-width: 370px;
+      color: var(--muted);
+      font-size: 1rem;
+      margin: 0;
+    }
+
+    .nav {
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
-      align-content: start;
+      padding: 18px 0 34px;
     }
 
-    .tag {
-      border: 1px solid rgba(40, 35, 28, 0.32);
+    .nav a {
+      text-decoration: none;
+      padding: 8px 11px;
+      border: 1px solid var(--line);
       border-radius: 999px;
-      padding: 7px 10px;
-      background: rgba(255, 255, 255, 0.48);
-      font-size: 12px;
-      font-weight: 850;
+      background: rgba(255, 255, 255, 0.55);
       color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 700;
+    }
+
+    .nav a:hover,
+    .nav a:focus-visible {
+      background: var(--ink);
+      color: #fff;
+      outline: none;
+    }
+
+    .project {
+      --accent: var(--green);
+      margin: 0 0 26px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .project-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+      gap: 0;
+      min-height: 460px;
+    }
+
+    .project-copy {
+      padding: clamp(22px, 4vw, 42px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 26px;
+      border-right: 1px solid var(--line);
+    }
+
+    .project-top {
+      display: grid;
+      gap: 18px;
+    }
+
+    .project-number {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+    }
+
+    h2 {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.5rem, 5vw, 5.8rem);
+      line-height: 0.94;
+      letter-spacing: 0;
+    }
+
+    .type {
+      margin: 0;
+      color: var(--accent);
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      font-size: 0.76rem;
+    }
+
+    .details {
+      display: grid;
+      gap: 14px;
+      margin-top: 6px;
+    }
+
+    .detail {
+      display: grid;
+      gap: 4px;
+    }
+
+    .detail h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 0.82rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+    }
+
+    .detail p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 64ch;
+    }
+
+    .features {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 2px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .features li {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #faf8f2;
+      color: var(--muted);
+      padding: 6px 10px;
+      font-size: 0.82rem;
+      font-weight: 700;
     }
 
     .actions {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
+      display: flex;
+      flex-wrap: wrap;
       gap: 10px;
     }
 
     .button {
-      min-height: 46px;
-      border: 2px solid var(--line);
-      border-radius: 7px;
-      padding: 11px 13px;
+      min-height: 44px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      background: var(--paper);
+      border-radius: 7px;
+      border: 1px solid var(--ink);
+      padding: 10px 14px;
       text-decoration: none;
-      font-weight: 900;
-      box-shadow: 4px 4px 0 var(--line);
-      transition: transform 150ms ease, box-shadow 150ms ease;
-      text-align: center;
-    }
-
-    .button:hover,
-    .button:focus-visible {
-      transform: translate(2px, 2px);
-      box-shadow: 2px 2px 0 var(--line);
-      outline: none;
+      font-weight: 850;
+      background: #fff;
+      color: var(--ink);
     }
 
     .button.primary {
       background: var(--accent);
-      color: #fff;
+      color: white;
+      border-color: var(--accent);
     }
 
-    .project-body {
-      display: grid;
-      gap: 18px;
-      align-content: start;
+    .button:hover,
+    .button:focus-visible {
+      transform: translateY(-1px);
+      outline: 3px solid color-mix(in srgb, var(--accent), transparent 72%);
+      outline-offset: 2px;
     }
 
-    .thumb-strip {
+    .preview {
+      background: var(--surface-soft);
+      min-height: 460px;
+      padding: 24px;
       display: grid;
-      grid-template-columns: 1fr 0.7fr;
       gap: 14px;
+      align-content: center;
     }
 
-    .thumb {
-      min-height: 270px;
-      border: 2px solid var(--line);
+    .browser-frame {
+      height: 320px;
+      border: 1px solid #bcb5a8;
       border-radius: 8px;
-      background: var(--paper);
       overflow: hidden;
-      position: relative;
-      box-shadow: 7px 7px 0 rgba(40, 35, 28, 0.18);
-    }
-
-    .thumb.small {
-      min-height: 270px;
-    }
-
-    .thumb-label {
-      position: absolute;
-      left: 12px;
-      top: 12px;
-      z-index: 2;
-      border: 1px solid rgba(40, 35, 28, 0.4);
-      border-radius: 999px;
-      background: rgba(251, 247, 239, 0.9);
-      padding: 6px 10px;
-      font-size: 12px;
-      font-weight: 900;
-      color: var(--muted);
-    }
-
-    .explain-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 14px;
-    }
-
-    .note {
-      border: 1px solid rgba(40, 35, 28, 0.3);
-      border-radius: 8px;
-      padding: 16px;
-      background: rgba(255, 255, 255, 0.45);
-      min-height: 170px;
-    }
-
-    .note h4 {
-      margin: 0 0 10px;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.12em;
-      color: var(--accent);
-    }
-
-    .note p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 15px;
-    }
-
-    .app-window {
-      position: absolute;
-      inset: 38px 22px 18px;
-      border: 2px solid var(--line);
-      border-radius: 8px;
       background: #fff;
-      overflow: hidden;
+      box-shadow: 0 14px 34px rgba(35, 32, 26, 0.18);
     }
 
-    .window-bar {
-      height: 28px;
-      border-bottom: 2px solid var(--line);
-      background: var(--paper-soft);
+    .browser-bar {
+      height: 30px;
+      background: #eee9df;
+      border-bottom: 1px solid #cfc7b8;
       display: flex;
       align-items: center;
       gap: 6px;
@@ -533,643 +276,324 @@
       height: 9px;
       border-radius: 50%;
       background: var(--accent);
-      border: 1px solid var(--line);
+      opacity: 0.9;
     }
 
-    .finish-fast .app-window {
-      background: #0b1020;
-      color: #f8fafc;
-    }
-
-    .finish-fast .window-bar {
-      background: #111827;
-    }
-
-    .finish-fast .mock {
-      padding: 18px;
-      display: grid;
-      gap: 14px;
-    }
-
-    .metric-row {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-    }
-
-    .metric {
-      border: 1px solid #2a3447;
-      border-radius: 7px;
-      padding: 10px;
-      background: #111827;
-    }
-
-    .metric b {
-      display: block;
-      font-size: 20px;
-      color: #38bdf8;
-    }
-
-    .bar {
-      height: 16px;
-      border-radius: 999px;
+    .frame-body {
+      height: calc(100% - 30px);
+      background: #fff;
       overflow: hidden;
-      display: grid;
-      grid-template-columns: 28% 36% 24% 12%;
-      border: 1px solid #2a3447;
-    }
-
-    .bar span:nth-child(1) { background: #06b6d4; }
-    .bar span:nth-child(2) { background: #4f46e5; }
-    .bar span:nth-child(3) { background: #10b981; }
-    .bar span:nth-child(4) { background: #ef4444; }
-
-    .task-lines {
-      display: grid;
-      gap: 9px;
-    }
-
-    .task-line {
-      height: 34px;
-      border-radius: 7px;
-      background: #111827;
-      border: 1px solid #2a3447;
       position: relative;
     }
 
-    .task-line:after {
-      content: "";
-      position: absolute;
-      inset: 10px auto 10px 12px;
-      width: 58%;
-      border-radius: 999px;
-      background: #334155;
+    .frame-body iframe {
+      width: 1440px;
+      height: 900px;
+      border: 0;
+      transform: scale(0.245);
+      transform-origin: top left;
+      pointer-events: none;
     }
 
-    .ticket .app-window {
-      background: #f7f7fb;
-    }
-
-    .ticket-hero {
-      height: 45%;
-      background:
-        linear-gradient(135deg, rgba(16, 185, 129, 0.92), rgba(139, 92, 246, 0.86)),
-        linear-gradient(45deg, transparent 20%, rgba(255,255,255,0.24) 20% 28%, transparent 28%);
-      display: grid;
-      align-items: end;
+    .extension-preview {
+      height: 100%;
       padding: 18px;
-      color: #fff;
-      font-weight: 900;
-      font-size: 28px;
-    }
-
-    .ticket-grid {
-      padding: 15px;
+      background:
+        linear-gradient(90deg, #f8fafd 0 60%, #ffffff 60% 100%);
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      grid-template-columns: 1fr 210px;
+      gap: 16px;
     }
 
-    .ticket-card {
-      height: 70px;
-      border: 1px solid #d7dae3;
-      border-radius: 8px;
-      background: white;
-      padding: 10px;
+    .calendar-grid {
       display: grid;
-      align-content: space-between;
-    }
-
-    .ticket-card span {
-      height: 8px;
-      border-radius: 999px;
-      background: #d7dae3;
-    }
-
-    .faces .app-window {
-      background: #0f172a;
-      padding: 16px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .face-card {
-      border-radius: 8px;
-      border: 1px solid #334155;
-      background: #1e293b;
-      display: grid;
-      place-items: center;
-      min-height: 58px;
-    }
-
-    .face {
-      width: 42px;
-      height: 42px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 34%, #fff 0 4px, transparent 5px), radial-gradient(circle at 65% 34%, #fff 0 4px, transparent 5px), var(--accent);
-      border: 2px solid rgba(255,255,255,0.5);
-      position: relative;
-    }
-
-    .face:after {
-      content: "";
-      position: absolute;
-      left: 13px;
-      right: 13px;
-      bottom: 12px;
-      height: 5px;
-      border-bottom: 2px solid white;
-      border-radius: 50%;
-    }
-
-    .route .app-window {
-      background: #f8fafc;
-      display: grid;
-      grid-template-columns: 28% 1fr;
-    }
-
-    .route-side {
-      background: #0f172a;
-      padding: 14px 8px;
-      display: grid;
-      gap: 10px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
       align-content: start;
     }
 
-    .route-side span {
-      height: 24px;
-      border-radius: 6px;
-      background: #1e293b;
-    }
-
-    .route-main {
-      padding: 15px;
-      display: grid;
-      gap: 10px;
-    }
-
-    .route-main div {
-      border: 1px solid #dbe2ea;
-      border-radius: 8px;
-      background: #fff;
-    }
-
-    .route-calendar {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 5px;
-      padding: 8px;
-    }
-
-    .route-calendar span {
-      min-height: 28px;
-      border-radius: 5px;
-      background: #e0f2fe;
-    }
-
-    .gsifter .app-window {
-      left: auto;
-      width: 48%;
-      background: #fff;
-      box-shadow: -14px 0 0 rgba(26, 115, 232, 0.14);
-    }
-
-    .calendar-canvas {
-      position: absolute;
-      inset: 38px 42% 18px 22px;
-      border: 2px solid var(--line);
-      border-radius: 8px;
-      background: #fff;
-      padding: 14px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-    }
-
-    .calendar-canvas span {
-      border-radius: 7px;
-      background: #e8f0fe;
-      min-height: 42px;
+    .event-block {
+      min-height: 44px;
       border-left: 5px solid #1a73e8;
+      background: #e8f0fe;
+      border-radius: 6px;
     }
 
-    .gs-tabs {
-      height: 38px;
+    .sidebar-mock {
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      background: #fff;
+      overflow: hidden;
+      box-shadow: -8px 0 22px rgba(26, 115, 232, 0.12);
+    }
+
+    .tabs {
+      height: 34px;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       border-bottom: 1px solid #dadce0;
-      font-size: 10px;
-      font-weight: 900;
       color: #5f6368;
+      font-size: 0.58rem;
+      font-weight: 850;
+      text-align: center;
     }
 
-    .gs-tabs span {
+    .tabs span {
       display: grid;
       place-items: center;
-      border-right: 1px solid #eef0f2;
     }
 
-    .gs-list {
-      padding: 12px;
+    .suggestions {
+      padding: 10px;
       display: grid;
       gap: 8px;
     }
 
-    .gs-item {
+    .suggestion {
       min-height: 42px;
-      border-radius: 8px;
       border: 1px solid #dadce0;
       background: #f8fbff;
+      border-radius: 7px;
     }
 
-    .thumb.small .app-window {
-      inset: 48px 20px 20px;
-    }
-
-    .feature-pills {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 9px;
-      position: absolute;
-      inset: 54px 18px 18px;
-    }
-
-    .feature-pills span {
-      display: grid;
-      place-items: center;
-      border: 2px solid var(--line);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.6);
+    .preview-caption {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
       color: var(--muted);
-      padding: 10px;
-      text-align: center;
-      font-size: 12px;
-      font-weight: 900;
+      font-size: 0.86rem;
     }
 
-    .footer {
-      min-height: 220px;
-      display: grid;
-      place-items: center;
-      text-align: center;
-      color: var(--muted);
-      padding: 60px 0 30px;
+    .preview-caption strong {
+      color: var(--ink);
     }
 
-    .footer p {
-      max-width: 48ch;
-      margin: 0;
-    }
-
-    @media (max-width: 1080px) {
-      .shell {
-        display: block;
+    @media (max-width: 900px) {
+      header,
+      .project-grid {
+        grid-template-columns: 1fr;
       }
 
-      .rail {
-        position: relative;
-        height: auto;
+      .project-copy {
         border-right: 0;
-        border-bottom: 2px solid var(--line);
+        border-bottom: 1px solid var(--line);
       }
 
-      .rail h1 {
-        max-width: none;
+      .preview,
+      .browser-frame {
+        min-height: 0;
       }
 
-      .rail-foot {
-        margin-top: 24px;
-      }
-
-      .hero,
-      .project,
-      .section-intro {
-        grid-template-columns: 1fr;
-      }
-
-      .project-meta {
-        position: relative;
-        top: auto;
-        min-height: auto;
+      .preview {
+        padding: 18px;
       }
     }
 
-    @media (max-width: 760px) {
-      main {
-        padding: 16px;
+    @media (max-width: 620px) {
+      .page {
+        width: min(100% - 24px, 1180px);
       }
 
-      .hero {
-        min-height: auto;
-        padding: 28px;
+      header {
+        padding-top: 28px;
       }
 
-      .atlas {
-        min-height: 350px;
+      .browser-frame {
+        height: 245px;
       }
 
-      .orbit {
-        width: 320px;
+      .frame-body iframe {
+        transform: scale(0.18);
       }
 
-      .node {
-        width: 86px;
-        height: 86px;
-        font-size: 12px;
-        transform:
-          translate(-50%, -50%)
-          rotate(var(--angle))
-          translate(0, -130px)
-          rotate(calc(var(--angle) * -1));
-      }
-
-      .node:hover,
-      .node:focus-visible {
-        transform:
-          translate(-50%, -50%)
-          rotate(var(--angle))
-          translate(0, -136px)
-          rotate(calc(var(--angle) * -1));
-      }
-
-      .center-seal {
-        width: 118px;
-        height: 118px;
-        font-size: 18px;
-      }
-
-      .thumb-strip,
-      .explain-grid,
-      .actions {
+      .extension-preview {
         grid-template-columns: 1fr;
       }
 
-      .project h3 {
-        font-size: 48px;
-      }
-
-      .metric-row {
-        grid-template-columns: repeat(2, 1fr);
+      .sidebar-mock {
+        display: none;
       }
     }
   </style>
 </head>
 <body>
-  <div class="shell">
-    <aside class="rail" aria-label="Portfolio navigation">
+  <div class="page">
+    <header>
       <div>
-        <div class="mark">M</div>
-        <div class="eyebrow">App Portfolio</div>
-        <h1>All my works</h1>
-        <p>A cabinet of useful little systems: planners, simulations, memory games, coordination tools, and a calendar assistant.</p>
-        <nav class="nav-list" id="navList"></nav>
+        <p class="eyebrow">MLee Portfolio</p>
+        <h1>Useful apps, clearly shown.</h1>
       </div>
-      <div class="rail-foot">
-        <div class="link-note">Project links are generated from one shared registry, so future hosted URL changes can be handled in one place.</div>
-      </div>
-    </aside>
+      <p class="intro">A readable portfolio of five projects, with real previews, plain-language descriptions, standout features, and links that stay relative to wherever this site is hosted.</p>
+    </header>
 
-    <main>
-      <section class="hero" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <div class="eyebrow">Five prototypes, one route through them</div>
-          <h2 id="hero-title">Made to move.</h2>
-          <p>Each project gets its own specimen drawer: what it looks like, what problem it solves, the dynamic I am proud of, and the project link.</p>
-        </div>
-        <div class="atlas" aria-label="Project orbit navigation">
-          <div class="orbit" id="orbit"></div>
-        </div>
-      </section>
+    <nav class="nav" id="nav" aria-label="Project navigation"></nav>
+    <main id="projects"></main>
 
-      <section class="section-intro" id="work">
-        <h2>Field Notes</h2>
-        <p>Visual thumbnails are drawn from the interaction patterns in each app, not generic link cards. Open the hosted project to try the full version.</p>
-      </section>
-
-      <div id="projects"></div>
-
-      <footer class="footer">
-        <p>Built as a standalone portfolio page. Update project names, descriptions, downloads, and hosted link behavior in the project registry inside this file.</p>
-      </footer>
-    </main>
   </div>
 
   <script>
-    const linkSettings = {
-      owner: "MLee12345",
-      pagesOrigin: "",
-      repoFallbackOrigin: "https://mlee12345.github.io"
-    };
-
     const projects = [
       {
         id: "finish-fast",
         name: "FinishFast",
         repo: "finish_fast",
-        type: "workload planner",
+        type: "Workload and focus planner",
         accent: "#4f46e5",
-        thumbnailClass: "finish-fast",
-        tags: ["bedtime budget", "focus timer", "local storage", "task triage"],
-        problem: "Schoolwork becomes hard to judge when tasks, fixed commitments, deadlines, and bedtime all compete in your head.",
-        solution: "FinishFast turns the night into a visible time budget, showing workload, commitments, buffer, overrun risk, and a focused timer flow.",
-        proud: "The bedtime pressure system is the spark: tasks and commitments become a live progress bar, and the app can flag when the plan no longer fits.",
-        mini: ["Time-to-bed budget", "Overrun warning", "Check-in timer", "Subject queue"]
+        preview: "../finish_fast/index.html",
+        code: "https://github.com/MLee12345/finish_fast",
+        problem: "Students can underestimate how much time is left once homework, fixed commitments, deadlines, and bedtime collide.",
+        solution: "FinishFast turns the evening into a live time budget with task duration, fixed commitments, buffer time, overrun warnings, and a focus timer.",
+        proud: "The bedtime budget is the strong dynamic: it makes an invisible time crunch visible before it becomes a late-night surprise.",
+        features: ["bedtime budget", "focus timer", "overrun alerts", "saved subjects"]
       },
       {
         id: "dopamine-live",
         name: "DopamineLive",
         repo: "dopamine_live",
-        type: "ticketing simulator",
+        type: "Virtual ticketing and merch simulator",
         accent: "#10b981",
-        thumbnailClass: "ticket",
-        tags: ["virtual tickets", "seat maps", "stage mode", "merch checkout"],
-        problem: "Real ticketing is exciting but stressful, full of scarcity cues, timers, fees, and irreversible-feeling checkout moments.",
-        solution: "DopamineLive makes those high-pressure patterns playful and local-only: browse shows, pick seats, claim virtual tickets, enter a stage, and buy virtual merch.",
-        proud: "The project has two moods in one loop: clean marketplace discovery, then a high-energy stage and merch experience after the ticket is claimed.",
-        mini: ["Seat selection", "Virtual wallet", "Concert stage", "Merch queue"]
+        preview: "../dopamine_live/index.html",
+        code: "https://github.com/MLee12345/dopamine_live",
+        problem: "Ticketing sites make discovery, seats, scarcity, checkout, and merch feel intense, but prototypes rarely let people safely explore that full loop.",
+        solution: "DopamineLive simulates a live-event marketplace where users browse shows, pick seats, claim virtual tickets, enter a stage, and buy virtual merch.",
+        proud: "The experience has a complete arc: marketplace discovery, ticket wallet, stage mode, merch queue, and local-only checkout simulation.",
+        features: ["seat maps", "virtual wallet", "stage mode", "merch queue"]
       },
       {
         id: "gsifter",
         name: "gSifter",
         repo: "gSifter",
-        type: "calendar extension",
+        type: "Google Calendar assistant extension",
         accent: "#1a73e8",
-        thumbnailClass: "gsifter",
-        tags: ["Chrome extension", "Google Calendar", "Gmail scanning", "AI rules"],
-        problem: "Useful events can hide inside email and calendar noise, and manually turning them into clean calendar entries costs attention.",
-        solution: "gSifter adds a Google Calendar sidebar that detects event suggestions, lets the user tune filtering rules through chat, and creates calendar events.",
-        proud: "The assistant lives where the user already schedules things: a sidebar with suggestions, rule tags, account settings, privacy toggles, and API-key activation.",
-        mini: ["Detected events", "Rule chat", "Privacy toggles", "Calendar target"],
-        download: "assets/gSifter-extension.zip"
+        preview: null,
+        code: "https://github.com/MLee12345/gSifter",
+        download: "assets/gSifter-extension.zip",
+        problem: "Useful events can get buried in emails and calendar clutter, and manually turning them into clean calendar entries takes attention.",
+        solution: "gSifter adds a sidebar to Google Calendar for detected event suggestions, chat-based filtering rules, connected accounts, and privacy settings.",
+        proud: "It lives directly inside the scheduling context, with suggestions, rule tuning, account setup, API-key activation, and calendar targeting in one panel.",
+        features: ["Chrome extension", "event suggestions", "rule chat", "privacy toggles"]
       },
       {
         id: "face-recall",
         name: "Face Recall",
         repo: "face_recall",
-        type: "memory game",
+        type: "Memory game",
         accent: "#6366f1",
-        thumbnailClass: "faces",
-        tags: ["memory practice", "theme controls", "auth flow", "game states"],
-        problem: "Remembering faces is a real social skill, but practice tools often feel clinical or disconnected from play.",
-        solution: "Face Recall turns recognition into a game interface with cards, profiles, session flow, and customizable visual settings.",
-        proud: "The interface is compact but complete: account states, drawer navigation, theme controls, and a board that makes recall feel approachable.",
-        mini: ["Face cards", "Profile states", "Theme picker", "Drawer nav"]
+        preview: "../face_recall/index.html",
+        code: "https://github.com/MLee12345/face_recall",
+        problem: "Face recognition is a useful social skill, but practice tools can feel clinical instead of inviting.",
+        solution: "Face Recall frames recognition as a card-based memory game with account states, profile flow, theme settings, and game navigation.",
+        proud: "The app keeps the practice lightweight and approachable while still feeling like a complete little product.",
+        features: ["face cards", "theme controls", "drawer nav", "profile flow"]
       },
       {
         id: "route-us",
         name: "RouteUs",
         repo: "route_us",
-        type: "carpool coordinator",
+        type: "Carpool coordination tool",
         accent: "#0284c7",
-        thumbnailClass: "route",
-        tags: ["carpool groups", "availability", "group chat", "profile tools"],
-        problem: "Carpool planning gets messy when families need to coordinate seats, kids, availability, destination details, and updates.",
-        solution: "RouteUs gives groups a shared dashboard for joining or creating carpools, editing schedules, seeing drivers and riders, and chatting in context.",
-        proud: "The group page ties together the practical pieces: code sharing, week schedule, member details, rider visibility, and lightweight messaging.",
-        mini: ["Group codes", "Week calendar", "Driver/rider roles", "Photo profile"]
+        preview: "../route_us/index.html",
+        code: "https://github.com/MLee12345/route_us",
+        problem: "Carpool groups need to coordinate kids, seats, availability, route details, and updates without spreading the plan across texts.",
+        solution: "RouteUs gives families shared groups with join codes, profiles, availability editing, driver/rider views, week schedules, and group chat.",
+        proud: "The group page combines the practical pieces in one place: schedule, members, rider details, destination notes, and chat.",
+        features: ["group codes", "week schedule", "driver roles", "group chat"]
       }
     ];
 
-    function hostedUrl(project) {
-      if (project.url) return project.url;
-      const currentHost = window.location.hostname;
-      const isLocalPreview = !currentHost || currentHost === "localhost" || currentHost === "127.0.0.1";
-      const canUseCurrentOrigin = window.location.protocol.startsWith("http") && !isLocalPreview;
-      const origin = linkSettings.pagesOrigin
-        || (canUseCurrentOrigin ? window.location.origin : linkSettings.repoFallbackOrigin);
-      return `${origin.replace(/\/$/, "")}/${project.repo}/`;
+    function projectUrl(project) {
+      return `../${project.repo}/`;
     }
 
-    function repoUrl(project) {
-      return `https://github.com/${linkSettings.owner}/${project.repo}`;
+    function arrowIcon() {
+      return `<svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg>`;
     }
 
-    function iconArrow() {
-      return `<svg aria-hidden="true" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"/><path d="M7 7h10v10"/></svg>`;
-    }
-
-    function renderThumb(project, secondary = false) {
-      const label = secondary ? "interaction notes" : "thumbnail";
-      if (project.thumbnailClass === "finish-fast" && !secondary) {
+    function previewMarkup(project) {
+      if (!project.preview) {
         return `
-          <div class="thumb ${project.thumbnailClass}">
-            <span class="thumb-label">${label}</span>
-            <div class="app-window">
-              <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-              <div class="mock">
-                <div class="metric-row">
-                  <div class="metric"><b>4h</b><small>left</small></div>
-                  <div class="metric"><b>85m</b><small>fixed</small></div>
-                  <div class="metric"><b>2h</b><small>work</small></div>
-                  <div class="metric"><b>42m</b><small>buffer</small></div>
+          <div class="browser-frame" aria-label="gSifter interface preview">
+            <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            <div class="frame-body">
+              <div class="extension-preview">
+                <div class="calendar-grid">
+                  ${Array.from({ length: 12 }, () => `<div class="event-block"></div>`).join("")}
                 </div>
-                <div class="bar"><span></span><span></span><span></span><span></span></div>
-                <div class="task-lines"><div class="task-line"></div><div class="task-line"></div><div class="task-line"></div></div>
+                <div class="sidebar-mock">
+                  <div class="tabs"><span>Suggestions</span><span>Chat</span><span>Settings</span></div>
+                  <div class="suggestions">
+                    <div class="suggestion"></div>
+                    <div class="suggestion"></div>
+                    <div class="suggestion"></div>
+                    <div class="suggestion"></div>
+                  </div>
+                </div>
               </div>
             </div>
           </div>`;
       }
-      if (project.thumbnailClass === "ticket" && !secondary) {
-        return `
-          <div class="thumb ${project.thumbnailClass}">
-            <span class="thumb-label">${label}</span>
-            <div class="app-window">
-              <div class="window-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-              <div class="ticket-hero">DopamineLive</div>
-              <div class="ticket-grid"><div class="ticket-card"><span></span><span></span></div><div class="ticket-card"><span></span><span></span></div><div class="ticket-card"><span></span><span></span></div><div class="ticket-card"><span></span><span></span></div></div>
-            </div>
-          </div>`;
-      }
-      if (project.thumbnailClass === "faces" && !secondary) {
-        return `
-          <div class="thumb ${project.thumbnailClass}">
-            <span class="thumb-label">${label}</span>
-            <div class="app-window">${Array.from({ length: 12 }, (_, i) => `<div class="face-card"><span class="face" style="background-color:${i % 3 === 0 ? "#6366f1" : i % 3 === 1 ? "#22c55e" : "#ef4444"}"></span></div>`).join("")}</div>
-          </div>`;
-      }
-      if (project.thumbnailClass === "route" && !secondary) {
-        return `
-          <div class="thumb ${project.thumbnailClass}">
-            <span class="thumb-label">${label}</span>
-            <div class="app-window">
-              <div class="route-side"><span></span><span></span><span></span><span></span></div>
-              <div class="route-main"><div style="height:70px"></div><div class="route-calendar">${Array.from({ length: 15 }, () => "<span></span>").join("")}</div><div style="height:52px"></div></div>
-            </div>
-          </div>`;
-      }
-      if (project.thumbnailClass === "gsifter" && !secondary) {
-        return `
-          <div class="thumb ${project.thumbnailClass}">
-            <span class="thumb-label">${label}</span>
-            <div class="calendar-canvas">${Array.from({ length: 9 }, () => "<span></span>").join("")}</div>
-            <div class="app-window">
-              <div class="gs-tabs"><span>Suggestions</span><span>Chat</span><span>Settings</span></div>
-              <div class="gs-list"><div class="gs-item"></div><div class="gs-item"></div><div class="gs-item"></div><div class="gs-item"></div></div>
-            </div>
-          </div>`;
-      }
+
       return `
-        <div class="thumb small">
-          <span class="thumb-label">${label}</span>
-          <div class="feature-pills">${project.mini.map(item => `<span>${item}</span>`).join("")}</div>
+        <div class="browser-frame" aria-label="${project.name} live preview">
+          <div class="browser-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+          <div class="frame-body">
+            <iframe src="${project.preview}" title="${project.name} preview" loading="lazy" tabindex="-1"></iframe>
+          </div>
         </div>`;
     }
 
-    function renderProjects() {
-      const nav = document.getElementById("navList");
-      const orbit = document.getElementById("orbit");
+    function render() {
+      const nav = document.getElementById("nav");
       const mount = document.getElementById("projects");
 
-      nav.innerHTML = projects.map((project, index) => `
-        <a href="#${project.id}">${project.name}<span>${index + 1}</span></a>
-      `).join("");
-
-      orbit.innerHTML = `
-        ${projects.map((project, index) => {
-          const angle = index * 72;
-          return `<a class="node" style="--angle:${angle}deg;--color:${project.accent}" href="#${project.id}">${project.name}<small>${project.type}</small></a>`;
-        }).join("")}
-        <div class="center-seal">choose<br>a door</div>
-      `;
+      nav.innerHTML = projects.map(project => `<a href="#${project.id}">${project.name}</a>`).join("");
 
       mount.innerHTML = projects.map((project, index) => `
         <article class="project" id="${project.id}" style="--accent:${project.accent}">
-          <aside class="project-meta">
-            <div class="project-kicker"><span>${project.type}</span><span class="project-number">${index + 1}</span></div>
-            <h3>${project.name}</h3>
-            <div class="tags">${project.tags.map(tag => `<span class="tag">${tag}</span>`).join("")}</div>
-            <div class="actions">
-              <a class="button primary" data-live-link="${project.id}" href="${hostedUrl(project)}" target="_blank" rel="noreferrer">Open project ${iconArrow()}</a>
-              ${project.download ? `<a class="button" href="${project.download}" download>Download gSifter</a>` : `<a class="button" href="${repoUrl(project)}" target="_blank" rel="noreferrer">View code ${iconArrow()}</a>`}
-            </div>
-          </aside>
-
-          <div class="project-body">
-            <div class="thumb-strip">
-              ${renderThumb(project)}
-              ${renderThumb(project, true)}
-            </div>
-            <div class="explain-grid">
-              <div class="note">
-                <h4>Problem</h4>
-                <p>${project.problem}</p>
+          <div class="project-grid">
+            <section class="project-copy">
+              <div class="project-top">
+                <span class="project-number">${index + 1}</span>
+                <div>
+                  <p class="type">${project.type}</p>
+                  <h2>${project.name}</h2>
+                </div>
+                <div class="details">
+                  <div class="detail">
+                    <h3>Problem</h3>
+                    <p>${project.problem}</p>
+                  </div>
+                  <div class="detail">
+                    <h3>How it solves it</h3>
+                    <p>${project.solution}</p>
+                  </div>
+                  <div class="detail">
+                    <h3>Feature I am proud of</h3>
+                    <p>${project.proud}</p>
+                  </div>
+                </div>
+                <ul class="features">
+                  ${project.features.map(feature => `<li>${feature}</li>`).join("")}
+                </ul>
               </div>
-              <div class="note">
-                <h4>How it solves it</h4>
-                <p>${project.solution}</p>
+              <div class="actions">
+                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<a class="button primary" href="${projectUrl(project)}" target="_blank" rel="noreferrer">Open project ${arrowIcon()}</a>`}
+                <a class="button" href="${project.code}" target="_blank" rel="noreferrer">View code ${arrowIcon()}</a>
               </div>
-              <div class="note">
-                <h4>Proud of</h4>
-                <p>${project.proud}</p>
+            </section>
+            <section class="preview">
+              ${previewMarkup(project)}
+              <div class="preview-caption">
+                <span><strong>Thumbnail:</strong> embedded project preview</span>
+                <span>${project.download ? "Extension download included" : "Relative project link"}</span>
               </div>
-            </div>
+            </section>
           </div>
         </article>
       `).join("");
     }
 
-    renderProjects();
+    render();
   </script>
 </body>
 </html>
