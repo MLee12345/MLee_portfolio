@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>gSifter Assistant</title>
+  <link rel="stylesheet" href="sidebar.css">
+  <style>
+    /* Strict Visibility Guard */
+    .hidden {
+      display: none !important;
+    }
+
+    /* Centered Tour Backdrop Overlay */
+    .tour-backdrop-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: 999999;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 1;
+      transition: opacity 0.3s ease;
+    }
+
+    .tour-backdrop-overlay.hidden {
+      display: none !important;
+    }
+
+    .tour-backdrop-overlay.dissolve {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Centered Tour Card */
+    .tour-card-centered {
+      width: 320px;
+      max-width: 90%;
+      background: #ffffff;
+      border: 1px solid var(--border-color, #dadce0);
+      border-radius: 12px;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.25);
+      padding: 18px;
+      transform: scale(1);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .tour-backdrop-overlay.dissolve .tour-card-centered {
+      transform: scale(0.92);
+    }
+
+    .tour-notice-box {
+      background: #fef7e0;
+      border: 1px solid #f9ab00;
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 11px;
+      color: #b06000;
+      font-weight: 600;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <nav class="nav-tabs">
+        <button class="tab-btn active" data-tab="suggestions">Suggestions</button>
+        <button class="tab-btn" data-tab="chat" id="chat-tab-btn">Chat</button>
+        <button class="tab-btn" data-tab="settings">Settings</button>
+      </nav>
+      <button id="close-sidebar-btn" class="close-btn" title="Close Sidebar">&times;</button>
+    </header>
+
+    <main class="main-content">
+      <section id="tab-suggestions" class="tab-panel active">
+        <div class="panel-header">
+          <span class="sub-heading">Detected Events</span>
+          <button id="trigger-sim-btn" class="text-link-btn">🔄 Refresh</button>
+        </div>
+        <div id="suggestions-list" class="suggestions-list"></div>
+      </section>
+
+      <section id="tab-chat" class="tab-panel">
+        <div class="chat-greeting">
+          <h2 id="greeting-title">Hello!</h2>
+        </div>
+
+        <!-- API Key Requirement Banner -->
+        <div id="chat-key-notice" class="tour-notice-box hidden">
+          <span>🔒 Input a valid Gemini API Key in Settings to activate</span>
+        </div>
+
+        <div class="rules-section">
+          <div class="section-title">Active Filtering Rules</div>
+          <div id="rules-container" class="rules-tags-container"></div>
+        </div>
+
+        <div class="chat-history-container" id="chat-history">
+          <div class="chat-bubble bot">
+            I'm continuously monitoring your communication apps. Tell me how you'd like to adjust event suggestions!
+          </div>
+        </div>
+
+        <div class="chat-input-wrapper">
+          <input type="text" id="chat-input" placeholder="Type suggestions..." autocomplete="off">
+          <button id="chat-send-btn" class="send-btn" aria-label="Send">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+              <line x1="22" y1="2" x2="11" y2="13"></line>
+              <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <section id="tab-settings" class="tab-panel">
+        <div class="sketch-box accounts-box">
+          <div class="box-header flex-between">
+            <span>Connected Accounts</span>
+            <button id="add-account-btn" class="sketch-add-btn-top">+ Add</button>
+          </div>
+          <div id="accounts-container"></div>
+        </div>
+
+        <div class="sketch-box">
+          <div class="box-header flex-between">
+            <span>Privacy & Calendar Options</span>
+          </div>
+
+          <div class="setting-item" id="setting-user-name">
+            <label for="user-name-input">Your Name (Greeting Name)</label>
+            <input type="text" id="user-name-input" class="form-input" value="" placeholder="Enter your name">
+          </div>
+
+          <div class="setting-item" id="setting-api-key-group">
+            <label for="api-key-input">AI API Key (Gemini) *</label>
+            <div class="input-with-action">
+              <div style="position: relative; flex: 1; display: flex; align-items: center;">
+                <input type="password" id="api-key-input" class="form-input" placeholder="AIzaSy..." style="padding-right: 32px;">
+                <button type="button" id="toggle-api-key-btn" style="position: absolute; right: 6px; background: none; border: none; cursor: pointer; padding: 2px; display: flex; align-items: center; color: var(--text-muted);" title="Toggle Visibility">
+                  <svg id="eye-icon-show" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                  </svg>
+                  <svg id="eye-icon-hide" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                  </svg>
+                </button>
+              </div>
+              <button type="button" id="save-api-key-btn" class="primary-btn" style="padding: 6px 14px; font-size: 12px; height: 35px;">Save</button>
+            </div>
+            <div id="api-key-error" class="error-text hidden" style="margin-top: 4px;"></div>
+          </div>
+
+          <div class="setting-item">
+            <label for="default-calendar-select">Default Target Calendar</label>
+            <select id="default-calendar-select" class="form-select">
+              <option value="Personal Calendar">Personal Calendar</option>
+            </select>
+          </div>
+
+          <div class="setting-item align-left-row">
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-24h-clock">
+              <span class="slider"></span>
+            </label>
+            <div>
+              <div class="item-label">24-Hour Clock</div>
+              <div class="item-desc">Display event times in 24-hour format (e.g., 17:00)</div>
+            </div>
+          </div>
+
+          <div class="setting-item align-left-row">
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-notifications" checked>
+              <span class="slider"></span>
+            </label>
+            <div>
+              <div class="item-label">Background Notifications</div>
+              <div class="item-desc">Notify when a new event is detected</div>
+            </div>
+          </div>
+
+          <div class="setting-item align-left-row">
+            <label class="toggle-switch">
+              <input type="checkbox" id="toggle-privacy-mode" checked>
+              <span class="slider"></span>
+            </label>
+            <div>
+              <div class="item-label">Local Data Privacy</div>
+              <div class="item-desc">Anonymize emails before AI scanning</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Centered Tour Backdrop Overlay & Widget -->
+    <div id="tour-overlay-wrapper" class="tour-backdrop-overlay hidden">
+      <div id="tour-card" class="tour-card-centered">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+          <h4 id="tour-step-title" style="margin: 0; font-size: 14px; font-weight: 700; color: #1a73e8;">Take a tour of gSifter? 👋</h4>
+          <button id="close-tour-x-btn" class="close-btn" style="font-size: 18px;" title="Close Tour">&times;</button>
+        </div>
+        <p id="tour-step-desc" style="font-size: 12px; line-height: 1.5; color: #3c4043; margin: 0 0 14px 0;"></p>
+        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #f1f3f4; padding-top: 10px;">
+          <button id="skip-tour-btn" class="secondary-btn" style="font-size: 11px; padding: 4px 10px;">Dismiss</button>
+          <div style="display: flex; gap: 4px;" id="tour-dots-row">
+            <span id="tour-dot-1" style="width: 6px; height: 6px; border-radius: 50%; background: #dadce0;"></span>
+            <span id="tour-dot-2" style="width: 6px; height: 6px; border-radius: 50%; background: #dadce0;"></span>
+            <span id="tour-dot-3" style="width: 6px; height: 6px; border-radius: 50%; background: #dadce0;"></span>
+          </div>
+          <button id="next-tour-btn" class="primary-btn" style="font-size: 11px; padding: 4px 14px;">Next &rarr;</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add Account Modal -->
+    <div id="add-account-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Add Connected Account</h3>
+          <button id="close-add-acc-modal" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <div id="add-acc-step-1" class="add-acc-step">
+            <div class="form-group" id="modal-greeting-name-group">
+              <label>Your Name (Greeting Name)</label>
+              <input type="text" id="new-user-name" class="form-input" placeholder="e.g. Alex" value="">
+            </div>
+
+            <div class="form-group">
+              <label>Account Label (e.g. Work, Personal) *</label>
+              <input type="text" id="new-acc-name" class="form-input" placeholder="e.g. Work">
+              <div id="label-error" class="error-text hidden">Account label is required.</div>
+            </div>
+
+            <div class="form-group">
+              <label>Google Account Email *</label>
+              <input type="email" id="new-acc-email" class="form-input" placeholder="name@company.com">
+              <div id="step1-error" class="error-text hidden">Please enter a valid email address.</div>
+            </div>
+
+            <button id="acc-step1-next" class="primary-btn full-width">Connect Account</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Edit Suggestion Modal -->
+    <div id="edit-modal" class="modal-overlay hidden">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modal-title">Edit Suggestion</h3>
+          <button id="close-modal-btn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="edit-event-id">
+
+          <div class="form-group">
+            <label>Event Name</label>
+            <input type="text" id="edit-event-title" class="form-input">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Start Date</label>
+              <input type="date" id="edit-event-start-date" class="form-input">
+            </div>
+            <div class="form-group">
+              <label>End Date</label>
+              <input type="date" id="edit-event-end-date" class="form-input">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label>Start Time</label>
+              <div class="time-digit-box">
+                <input type="text" id="edit-start-hh" class="digit-input" maxlength="2" placeholder="09" inputmode="numeric">
+                <span class="colon-sep">:</span>
+                <input type="text" id="edit-start-mm" class="digit-input" maxlength="2" placeholder="00" inputmode="numeric">
+                <button type="button" id="edit-start-ampm" class="ampm-pill-btn">AM</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>End Time</label>
+              <div class="time-digit-box">
+                <input type="text" id="edit-end-hh" class="digit-input" maxlength="2" placeholder="05" inputmode="numeric">
+                <span class="colon-sep">:</span>
+                <input type="text" id="edit-end-mm" class="digit-input" maxlength="2" placeholder="00" inputmode="numeric">
+                <button type="button" id="edit-end-ampm" class="ampm-pill-btn">PM</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Target Calendar</label>
+            <select id="edit-event-calendar" class="form-select">
+              <option value="Personal Calendar">Personal Calendar</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Location / Meeting Link</label>
+            <input type="text" id="edit-event-location" class="form-input" placeholder="Room B or Address">
+          </div>
+
+          <div class="form-group">
+            <label>Notes / AI Context</label>
+            <textarea id="edit-event-notes" class="form-input" rows="2"></textarea>
+          </div>
+
+          <div id="edit-modal-error" class="error-text hidden" style="margin-top: 10px; margin-bottom: 2px;"></div>
+        </div>
+        <div class="modal-footer">
+          <button id="cancel-edit-btn" class="secondary-btn">Cancel</button>
+          <button id="save-edit-btn" class="primary-btn">Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="toast-message" class="toast hidden">Event added</div>
+  </div>
+
+  <script>
+    localStorage.setItem('gsifter_tour_completed', 'true');
+    localStorage.setItem('gsifter_api_key', 'fake-preview-api-key');
+    localStorage.setItem('gsifter_user_name', 'MLee');
+    localStorage.setItem('gsifter_default_calendar', 'School Calendar');
+    localStorage.setItem('gsifter_accounts', JSON.stringify([
+      { id: 'demo-work', name: 'School', email: 'mlee@school.example' },
+      { id: 'demo-personal', name: 'Personal', email: 'mlee@example.com' }
+    ]));
+    localStorage.setItem('gsifter_suggestions', JSON.stringify([
+      {
+        id: 'evt-1',
+        title: 'Study group with Nora',
+        startDate: '2026-11-11',
+        endDate: '2026-11-11',
+        displayMonth: 'Nov',
+        displayDay: '11',
+        startTime: '16:30',
+        endTime: '17:30',
+        source: 'Gmail',
+        sourceUrl: '#',
+        location: 'Library room B',
+        targetCalendar: 'School Calendar',
+        isUpdate: false,
+        isAdded: false
+      },
+      {
+        id: 'evt-2',
+        title: 'Math review session',
+        startDate: '2026-11-13',
+        endDate: '2026-11-13',
+        displayMonth: 'Nov',
+        displayDay: '13',
+        startTime: '14:00',
+        endTime: '15:00',
+        source: 'Gchat',
+        sourceUrl: '#',
+        location: 'Room 204',
+        targetCalendar: 'School Calendar',
+        isUpdate: false,
+        isAdded: false
+      },
+      {
+        id: 'evt-3',
+        title: 'Volunteer shift',
+        startDate: '2026-11-14',
+        endDate: '2026-11-14',
+        displayMonth: 'Nov',
+        displayDay: '14',
+        startTime: '10:00',
+        endTime: '12:00',
+        source: 'Gmail',
+        sourceUrl: '#',
+        location: 'Community garden',
+        targetCalendar: 'Personal Calendar',
+        isUpdate: false,
+        isAdded: false
+      }
+    ]));
+    window.fetch = async () => ({
+      ok: true,
+      json: async () => ({
+        candidates: [{
+          content: {
+            parts: [{
+              text: JSON.stringify({
+                reply: "Done. I will prioritize school-related events and ignore promotional invites.",
+                updatedRules: ["Ignore newsletter invites", "Prioritize school events"],
+                dismissedEventIds: []
+              })
+            }]
+          }
+        }]
+      })
+    });
+  </script>
+  <script src="sidebar.js"></script>
+</body>
+</html>

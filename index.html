@@ -50,9 +50,7 @@
       padding: 34px 0 28px;
       border-bottom: 1px solid var(--line);
       display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(260px, 0.42fr);
-      align-items: stretch;
-      gap: 24px;
+      gap: 20px;
     }
 
     .eyebrow {
@@ -89,52 +87,32 @@
       white-space: nowrap;
     }
 
-    .hero-panel {
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      background:
-        linear-gradient(90deg, rgba(31, 33, 29, 0.045) 1px, transparent 1px),
-        linear-gradient(0deg, rgba(31, 33, 29, 0.045) 1px, transparent 1px),
-        rgba(255, 255, 255, 0.58);
-      background-size: 22px 22px;
-      padding: 16px;
-      display: grid;
-      align-content: space-between;
-      gap: 24px;
-      min-height: 174px;
-    }
-
-    .hero-panel p {
-      margin: 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-      font-weight: 650;
-      max-width: 28ch;
-    }
-
-    .hero-stack {
-      display: grid;
-      gap: 7px;
-    }
-
-    .hero-stack span {
+    .hero-meta {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      border-top: 1px solid rgba(31, 33, 29, 0.14);
-      padding-top: 7px;
-      color: rgba(31, 33, 29, 0.74);
-      font-size: 0.78rem;
-      font-weight: 850;
+      justify-content: flex-start;
+      flex-wrap: wrap;
+      gap: 10px 14px;
     }
 
-    .hero-stack span::after {
-      content: "";
-      width: 38px;
-      height: 3px;
-      background: currentColor;
-      opacity: 0.28;
+    .project-marks {
+      display: flex;
+      gap: 7px;
+      align-items: center;
+    }
+
+    .project-mark {
+      width: 36px;
+      height: 7px;
+      border-radius: 999px;
+      background: var(--mark);
+      box-shadow: inset 0 0 0 1px rgba(31, 33, 29, 0.08);
+    }
+
+    .hero-note {
+      color: var(--muted);
+      font-size: 0.84rem;
+      font-weight: 850;
     }
 
     .back-top {
@@ -287,7 +265,7 @@
     }
 
     .type {
-      margin: 0;
+      margin: 0 0 16px;
       color: var(--accent);
       font-weight: 900;
       text-transform: uppercase;
@@ -489,6 +467,12 @@
       display: block;
     }
 
+    .window-icon {
+      width: 15px;
+      height: 15px;
+      display: block;
+    }
+
     .download-note {
       color: var(--muted);
       font-size: 0.78rem;
@@ -513,7 +497,7 @@
       gap: 7px 10px;
       align-items: center;
       justify-content: center;
-      margin: 0 0 8px;
+      margin: 0;
       font-weight: 750;
     }
 
@@ -534,8 +518,16 @@
     }
 
     .footer-note {
-      margin: 0 auto;
+      margin: 0;
       max-width: 860px;
+    }
+
+    .footer-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 7px 10px;
     }
 
     .preview-modal {
@@ -605,11 +597,6 @@
         grid-template-columns: 1fr;
       }
 
-      header {
-        display: grid;
-        grid-template-columns: 1fr;
-      }
-
       .project-copy {
         border-right: 0;
         border-bottom: 1px solid var(--line);
@@ -670,24 +657,29 @@
         <p class="eyebrow">MLee Portfolio</p>
         <h1><span class="headline-line">Projects that solve</span><br><span class="headline-line">real problems.</span></h1>
       </div>
-      <aside class="hero-panel" aria-label="Portfolio overview">
+      <div class="hero-meta" aria-label="Portfolio overview">
         <div class="site-corner">5 projects • live previews</div>
-        <p>A compact gallery of usable apps, screenshots, and source code.</p>
-        <div class="hero-stack" aria-hidden="true">
-          <span>Plan</span>
-          <span>Play</span>
-          <span>Schedule</span>
+        <div class="project-marks" aria-hidden="true">
+          <span class="project-mark" style="--mark:#4f46e5"></span>
+          <span class="project-mark" style="--mark:#10b981"></span>
+          <span class="project-mark" style="--mark:#1a73e8"></span>
+          <span class="project-mark" style="--mark:#6366f1"></span>
+          <span class="project-mark" style="--mark:#0284c7"></span>
         </div>
-      </aside>
+        <span class="hero-note">Preview apps here, then jump to code.</span>
+      </div>
     </header>
 
     <nav class="nav" id="nav" aria-label="Project navigation"></nav>
     <main id="projects"></main>
     <footer class="site-footer" aria-label="Portfolio information">
-      <div class="footer-links">
-        <a href="about.html">About</a>
+      <div class="footer-row">
+        <div class="footer-links">
+          <a href="about.html">About</a>
+        </div>
+        <span class="footer-separator">|</span>
+        <p class="footer-note">This portfolio and all included projects were built with AI assistance.</p>
       </div>
-      <p class="footer-note">This portfolio and all included projects were built with AI assistance.</p>
     </footer>
     <div class="preview-modal" id="previewModal" role="dialog" aria-modal="true" aria-labelledby="previewTitle">
       <div class="modal-window">
@@ -717,7 +709,7 @@
         id: "finish-fast",
         name: "FinishFast",
         repo: "finish_fast",
-        type: "Workload and focus planner",
+        type: "Homework time planner",
         accent: "#4f46e5",
         label: "Homework time planner",
         live: "assets/previews/finish_fast/index.html",
@@ -726,8 +718,7 @@
           { src: "assets/screenshots/finish-fast-budget.png", alt: "FinishFast bedtime budget and homework queue" },
           { src: "assets/screenshots/finish-fast-overrun-options.png", alt: "FinishFast overrun resolution options" },
           { src: "assets/screenshots/finish-fast-focus.png", alt: "FinishFast focus timer screen" },
-          { src: "assets/screenshots/finish-fast-checkin.png", alt: "FinishFast focus check-in prompt" },
-          { src: "assets/screenshots/finish-fast-completed.png", alt: "FinishFast completed task filter" }
+          { src: "assets/screenshots/finish-fast-checkin.png", alt: "FinishFast focus check-in prompt" }
         ],
         problem: "Students can underestimate how much time is left once homework, fixed commitments, deadlines, and bedtime collide.",
         solution: "FinishFast turns the evening into a live time budget with task duration, fixed commitments, buffer time, overrun warnings, and a focus timer.",
@@ -738,7 +729,7 @@
         id: "dopamine-live",
         name: "DopamineLive",
         repo: "dopamine_live",
-        type: "Virtual ticketing and merch simulator",
+        type: "Virtual concert tickets",
         accent: "#10b981",
         label: "Virtual concert tickets",
         live: "assets/previews/dopamine_live/index.html",
@@ -759,7 +750,7 @@
         id: "gsifter",
         name: "gSifter",
         repo: "gSifter",
-        type: "Google Calendar assistant extension",
+        type: "Calendar email assistant",
         accent: "#1a73e8",
         label: "Calendar email assistant",
         live: "assets/gsifter-demo.html",
@@ -783,7 +774,7 @@
         id: "face-recall",
         name: "Face Recall",
         repo: "face_recall",
-        type: "Memory game",
+        type: "Name memory game",
         accent: "#6366f1",
         label: "Name memory game",
         live: "assets/previews/face_recall/index.html",
@@ -792,7 +783,6 @@
           { src: "assets/screenshots/face-recall-game.png", alt: "Face Recall quiz mode" },
           { src: "assets/screenshots/face-recall-match.png", alt: "Face Recall matching mode" },
           { src: "assets/screenshots/face-recall-decks.png", alt: "Face Recall deck management screen" },
-          { src: "assets/screenshots/face-recall-welcome.png", alt: "Face Recall welcome screen" },
           { src: "assets/screenshots/face-recall-leaderboard.png", alt: "Face Recall leaderboard screen" }
         ],
         problem: "Face recognition is a useful social skill, but practice tools can feel clinical instead of inviting.",
@@ -804,7 +794,7 @@
         id: "route-us",
         name: "RouteUs",
         repo: "route_us",
-        type: "Carpool coordination tool",
+        type: "Carpool schedule tool",
         accent: "#0284c7",
         label: "Carpool schedule tool",
         live: "assets/previews/route_us/index.html",
@@ -812,9 +802,7 @@
         screenshots: [
           { src: "assets/screenshots/route-us-dashboard.png", alt: "RouteUs dashboard with carpool group" },
           { src: "assets/screenshots/route-us-group.png", alt: "RouteUs group schedule calendar" },
-          { src: "assets/screenshots/route-us-availability.png", alt: "RouteUs availability editing screen" },
-          { src: "assets/screenshots/route-us-profile.png", alt: "RouteUs profile settings screen" },
-          { src: "assets/screenshots/route-us-dark.png", alt: "RouteUs dark mode dashboard" }
+          { src: "assets/screenshots/route-us-profile.png", alt: "RouteUs profile settings screen" }
         ],
         problem: "Carpool groups need to coordinate kids, seats, availability, route details, and updates without spreading the plan across texts.",
         solution: "RouteUs gives families shared groups with join codes, profiles, availability editing, driver/rider views, week schedules, and group chat.",
@@ -825,6 +813,10 @@
 
     function arrowIcon() {
       return `<svg class="arrow-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17 17 7"></path><path d="M7 7h10v10"></path></svg>`;
+    }
+
+    function windowIcon() {
+      return `<svg class="window-icon" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"></rect><path d="M3 9h18"></path><path d="M8 14h8"></path></svg>`;
     }
 
     function githubIcon() {
@@ -862,7 +854,7 @@
       mount.innerHTML = projects.map((project, index) => `
         <article class="project" id="${project.id}" style="--accent:${project.accent}">
           <div class="project-toolbar">
-            <button class="mini-link" type="button" data-preview="${project.live}" data-preview-title="${project.name}">${project.previewText || "Preview"} ${arrowIcon()}</button>
+            <button class="mini-link" type="button" data-preview="${project.live}" data-preview-title="${project.name}">${project.previewText || "Preview here"} ${windowIcon()}</button>
           </div>
           <div class="project-grid">
             <section class="project-copy">
@@ -887,7 +879,7 @@
                 </div>
               </div>
               <div class="actions">
-                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<button class="button primary" type="button" data-preview="${project.live}" data-preview-title="${project.name}">Open project ${arrowIcon()}</button>`}
+                ${project.download ? `<a class="button primary" href="${project.download}" download>Download gSifter</a>` : `<button class="button primary" type="button" data-preview="${project.live}" data-preview-title="${project.name}">Open here ${windowIcon()}</button>`}
                 <a class="button" href="${project.code}" target="_blank" rel="noreferrer" title="View code on GitHub" aria-label="View ${project.name} code on GitHub">See in ${githubIcon()}${arrowIcon()}</a>
               </div>
               ${project.downloadNote ? `<p class="download-note">${project.downloadNote}</p>` : ""}
